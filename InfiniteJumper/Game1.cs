@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Undine.Core;
+using Undine.DefaultEcs;
 
 namespace InfiniteJumper
 {
@@ -8,6 +10,7 @@ namespace InfiniteJumper
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private EcsContainer _ecsContainer;
 
         public Game1()
         {
@@ -19,6 +22,11 @@ namespace InfiniteJumper
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            float meterInPixels = 16;
+
+            _ecsContainer = new DefaultEcsContainer();
+            //_ecsContainer = new MinEcsContainer();
+            //_ecsContainer = new LeopotamEcsContainer();
 
             base.Initialize();
         }
