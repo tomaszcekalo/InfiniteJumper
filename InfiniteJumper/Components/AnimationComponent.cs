@@ -4,7 +4,7 @@ using System.Text;
 
 namespace InfiniteJumper.Components
 {
-    class AnimationComponent
+    internal struct AnimationComponent
     {
     }
 }
