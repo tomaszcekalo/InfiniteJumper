@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using InfiniteJumper.Systems;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Undine.Core;
@@ -27,6 +28,9 @@ namespace InfiniteJumper
             _ecsContainer = new DefaultEcsContainer();
             //_ecsContainer = new MinEcsContainer();
             //_ecsContainer = new LeopotamEcsContainer();
+
+            _ecsContainer.AddSystem(new SpriteAnimationSystem());
+            _ecsContainer.AddSystem(new JumpSystem());
 
             base.Initialize();
         }
