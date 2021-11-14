@@ -5,7 +5,7 @@ using MonoGame;
 
 namespace InfiniteJumper.Components
 {
-    internal struct SpriteAnimationComponent
+    public struct SpriteAnimationComponent
     {
         public int CurrentFrameNumber { get; set; }
         private int _fps;

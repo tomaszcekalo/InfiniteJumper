@@ -32,6 +32,8 @@ namespace InfiniteJumper
             _ecsContainer.AddSystem(new SpriteAnimationSystem());
             _ecsContainer.AddSystem(new JumpSystem());
 
+            _ecsContainer.CreateNewEntity();
+
             base.Initialize();
         }
 
