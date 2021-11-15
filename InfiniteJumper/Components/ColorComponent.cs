@@ -5,7 +5,7 @@ using System.Text;
 
 namespace InfiniteJumper.Components
 {
-    internal struct ColorComponent
+    public struct ColorComponent
     {
         public Color Color;
     }
