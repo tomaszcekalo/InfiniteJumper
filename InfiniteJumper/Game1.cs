@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
+using System;
 using Undine.Core;
 using Undine.DefaultEcs;
 
@@ -11,6 +13,8 @@ namespace InfiniteJumper
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private Song _music;
+        private Song _startMusic;
         private EcsContainer _ecsContainer;
 
         public Game1()
@@ -40,6 +44,11 @@ namespace InfiniteJumper
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _music = Song.FromUri("music.mp3", new Uri("Content/music.mp3", UriKind.Relative));
+            _startMusic = Song.FromUri("startMusic.mp3", new Uri("Content/startMusic.mp3", UriKind.Relative));
+
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(_startMusic);
 
             // TODO: use this.Content to load your game content here
         }
