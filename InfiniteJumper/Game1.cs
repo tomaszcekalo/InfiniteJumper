@@ -15,11 +15,20 @@ namespace InfiniteJumper
         private SpriteBatch _spriteBatch;
         private Song _music;
         private Song _startMusic;
+        private Texture2D _chmury;
+        private Texture2D _moneta;
+        private Texture2D _gory;
+        private Texture2D _niebo;
+        private Texture2D _platform;
+        private Texture2D _player;
         private EcsContainer _ecsContainer;
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
+            //<canvas style="width: 1746px; height: 981.634px;" width="1334" height="750"></canvas>
+            _graphics.PreferredBackBufferHeight = 750;
+            _graphics.PreferredBackBufferWidth = 1334;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -46,6 +55,12 @@ namespace InfiniteJumper
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _music = Song.FromUri("music.mp3", new Uri("Content/music.mp3", UriKind.Relative));
             _startMusic = Song.FromUri("startMusic.mp3", new Uri("Content/startMusic.mp3", UriKind.Relative));
+            _chmury = Content.Load<Texture2D>("chmury");
+            _moneta = Content.Load<Texture2D>("moneta");
+            _gory = Content.Load<Texture2D>("gory");
+            _niebo = Content.Load<Texture2D>("niebo");
+            _platform = Content.Load<Texture2D>("platform");
+            _player = Content.Load<Texture2D>("player");
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(_startMusic);
@@ -68,6 +83,17 @@ namespace InfiniteJumper
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(_niebo, _niebo.Bounds, Color.White);
+            _spriteBatch.Draw(_chmury, new Rectangle(
+                new Point(-(int)(gameTime.TotalGameTime.TotalMilliseconds / 50), 0),
+                _chmury.Bounds.Size),
+                Color.White);
+            _spriteBatch.Draw(_gory, new Rectangle(
+                new Point(-(int)(gameTime.TotalGameTime.TotalMilliseconds / 25), 0),
+                _gory.Bounds.Size),
+                Color.White);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
