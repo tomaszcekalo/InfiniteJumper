@@ -1,9 +1,11 @@
-﻿using InfiniteJumper.Systems;
+﻿using InfiniteJumper.Components;
+using InfiniteJumper.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
+using System.Collections.Generic;
 using Undine.Core;
 using Undine.DefaultEcs;
 
@@ -21,6 +23,7 @@ namespace InfiniteJumper
         private Texture2D _niebo;
         private Texture2D _platform;
         private Texture2D _player;
+        private SpriteAnimationComponent _playerAnimation;
         private EcsContainer _ecsContainer;
 
         public Game1()
@@ -62,6 +65,17 @@ namespace InfiniteJumper
             _platform = Content.Load<Texture2D>("platform");
             _player = Content.Load<Texture2D>("player");
 
+            _playerAnimation = new SpriteAnimationComponent()
+            {
+                CurrentFrameNumber = 0,
+                FPS = 2,
+                Frames = new List<SpriteComponent>()
+                {
+                    new SpriteComponent(_player,new Rectangle(0,0,24,48)),
+                    new SpriteComponent(_player,new Rectangle(24,0,24,48))
+                }
+            };
+
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(_startMusic);
 
@@ -92,6 +106,12 @@ namespace InfiniteJumper
             _spriteBatch.Draw(_gory, new Rectangle(
                 new Point(-(int)(gameTime.TotalGameTime.TotalMilliseconds / 25), 0),
                 _gory.Bounds.Size),
+                Color.White);
+            _playerAnimation.Update(gameTime.ElapsedGameTime.TotalSeconds);
+            _spriteBatch.Draw(
+                _playerAnimation.CurrentFrame.Texture,
+                Vector2.Zero,
+                _playerAnimation.CurrentFrame.SourceRectangle,
                 Color.White);
             _spriteBatch.End();
 

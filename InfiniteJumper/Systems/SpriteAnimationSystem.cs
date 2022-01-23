@@ -8,9 +8,10 @@ using Undine.MonoGame;
 
 namespace InfiniteJumper.Systems
 {
-    public class SpriteAnimationSystem : UnifiedSystem<SpriteAnimationComponent, TransformComponent, ColorComponent>
+    public class SpriteAnimationSystem
+        : UnifiedSystem<SpriteAnimationComponent, TransformComponent, ColorComponent>
     {
-        private SpriteBatch _spriteBatch;
+        private SpriteBatch SpriteBatch { get; set; }
 
         public override void ProcessSingleEntity(
             int entityId,
@@ -18,7 +19,7 @@ namespace InfiniteJumper.Systems
             ref TransformComponent b,
             ref ColorComponent c)
         {
-            _spriteBatch.Draw(
+            SpriteBatch.Draw(
                 texture: a.CurrentFrame.Texture,
                 position: b.Position,
                 sourceRectangle: a.CurrentFrame.SourceRectangle,

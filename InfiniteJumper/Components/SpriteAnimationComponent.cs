@@ -9,8 +9,8 @@ namespace InfiniteJumper.Components
     {
         public int CurrentFrameNumber { get; set; }
         private int _fps;
-        private float _delta;
-        private float _frameTime;
+        private double _delta;
+        private double _frameTime;
         public List<SpriteComponent> Frames { get; set; }
 
         public SpriteComponent CurrentFrame
@@ -30,11 +30,11 @@ namespace InfiniteJumper.Components
             set
             {
                 _fps = value;
-                _frameTime = 1.0f / _fps;
+                _frameTime = 1.0 / _fps;
             }
         }
 
-        public void Update(float delta)
+        public void Update(double delta)
         {
             _delta += delta;
             if (_delta > _frameTime)
