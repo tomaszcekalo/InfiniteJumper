@@ -23,8 +23,11 @@ namespace InfiniteJumper
         private Texture2D _niebo;
         private Texture2D _platform;
         private Texture2D _player;
+        private SpriteFont _font;
         private SpriteAnimationComponent _playerAnimation;
+        private SpriteAnimationComponent _coinAnimation;
         private EcsContainer _ecsContainer;
+        private IGameStateManager _gameStateManager;
 
         public Game1()
         {
@@ -50,6 +53,8 @@ namespace InfiniteJumper
 
             _ecsContainer.CreateNewEntity();
 
+            _gameStateManager = new GameStateManager();
+
             base.Initialize();
         }
 
@@ -64,15 +69,31 @@ namespace InfiniteJumper
             _niebo = Content.Load<Texture2D>("niebo");
             _platform = Content.Load<Texture2D>("platform");
             _player = Content.Load<Texture2D>("player");
+            _font = Content.Load<SpriteFont>("ClickToStartFont");
 
             _playerAnimation = new SpriteAnimationComponent()
             {
                 CurrentFrameNumber = 0,
-                FPS = 2,
+                FPS = 4,
                 Frames = new List<SpriteComponent>()
                 {
                     new SpriteComponent(_player,new Rectangle(0,0,24,48)),
                     new SpriteComponent(_player,new Rectangle(24,0,24,48))
+                }
+            };
+
+            _coinAnimation = new SpriteAnimationComponent()
+            {
+                CurrentFrameNumber = 0,
+                FPS = 6,
+                Frames = new List<SpriteComponent>()
+                {
+                    new SpriteComponent(_moneta,new Rectangle(0,0,20,20)),
+                    new SpriteComponent(_moneta,new Rectangle(20,0,20,20)),
+                    new SpriteComponent(_moneta,new Rectangle(40,0,20,20)),
+                    new SpriteComponent(_moneta,new Rectangle(60,0,20,20)),
+                    new SpriteComponent(_moneta,new Rectangle(80,0,20,20)),
+                    new SpriteComponent(_moneta,new Rectangle(100,0,20,20)),
                 }
             };
 
@@ -88,6 +109,11 @@ namespace InfiniteJumper
                 Exit();
 
             // TODO: Add your update logic here
+            if (!_gameStateManager.IsPlaying && Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                _gameStateManager.IsPlaying = true;
+                MediaPlayer.Play(_music);
+            }
 
             base.Update(gameTime);
         }
@@ -98,21 +124,51 @@ namespace InfiniteJumper
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            _spriteBatch.Draw(_niebo, _niebo.Bounds, Color.White);
-            _spriteBatch.Draw(_chmury, new Rectangle(
-                new Point(-(int)(gameTime.TotalGameTime.TotalMilliseconds / 50), 0),
-                _chmury.Bounds.Size),
-                Color.White);
-            _spriteBatch.Draw(_gory, new Rectangle(
-                new Point(-(int)(gameTime.TotalGameTime.TotalMilliseconds / 25), 0),
-                _gory.Bounds.Size),
-                Color.White);
-            _playerAnimation.Update(gameTime.ElapsedGameTime.TotalSeconds);
-            _spriteBatch.Draw(
-                _playerAnimation.CurrentFrame.Texture,
-                Vector2.Zero,
-                _playerAnimation.CurrentFrame.SourceRectangle,
-                Color.White);
+            if (_gameStateManager.IsPlaying)
+            {
+                _spriteBatch.Draw(_niebo, _niebo.Bounds, Color.White);
+                var cloudBase = (-(int)(gameTime.TotalGameTime.TotalMilliseconds / 50)) % _chmury.Width;
+                _spriteBatch.Draw(_chmury, new Rectangle(
+                    new Point(cloudBase + _chmury.Width, 0),
+                    _chmury.Bounds.Size),
+                    Color.White);
+                _spriteBatch.Draw(_chmury, new Rectangle(
+                    new Point(cloudBase, 0),
+                    _chmury.Bounds.Size),
+                    Color.White);
+                var mountainBase = (-(int)(gameTime.TotalGameTime.TotalMilliseconds / 25)) % _gory.Width;
+                _spriteBatch.Draw(_gory, new Rectangle(
+                    new Point(mountainBase + _gory.Width, 0),
+                    _gory.Bounds.Size),
+                    Color.White);
+                _spriteBatch.Draw(_gory, new Rectangle(
+                    new Point(mountainBase, 0),
+                    _gory.Bounds.Size),
+                    Color.White);
+                _playerAnimation.Update(gameTime.ElapsedGameTime.TotalSeconds);
+                _spriteBatch.Draw(
+                    _playerAnimation.CurrentFrame.Texture,
+                    Vector2.Zero,
+                    _playerAnimation.CurrentFrame.SourceRectangle,
+                    Color.White);
+                _coinAnimation.Update(gameTime.ElapsedGameTime.TotalSeconds);
+                _spriteBatch.Draw(
+                    _coinAnimation.CurrentFrame.Texture,
+                    new Vector2(64, 64),
+                    _coinAnimation.CurrentFrame.SourceRectangle,
+                    Color.White);
+            }
+            else
+            {
+                var textSize = _font.MeasureString("Click to start");
+                _spriteBatch.DrawString(
+                    _font,
+                    "Click to start",
+                    new Vector2(
+                        _graphics.PreferredBackBufferWidth / 2 - textSize.X / 2,
+                        _graphics.PreferredBackBufferHeight / 2),
+                    Color.White);
+            }
             _spriteBatch.End();
 
             base.Draw(gameTime);
