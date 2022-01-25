@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using Undine.Core;
 using Undine.DefaultEcs;
+using Undine.VelcroPhysics.MonoGame;
 
 namespace InfiniteJumper
 {
@@ -43,6 +44,7 @@ namespace InfiniteJumper
         {
             // TODO: Add your initialization logic here
             float meterInPixels = 16;
+            ConvertUnits.SetDisplayUnitToSimUnitRatio(meterInPixels);
 
             _ecsContainer = new DefaultEcsContainer();
             //_ecsContainer = new MinEcsContainer();
@@ -50,6 +52,7 @@ namespace InfiniteJumper
 
             _ecsContainer.AddSystem(new SpriteAnimationSystem());
             _ecsContainer.AddSystem(new JumpSystem());
+            _ecsContainer.AddSystem(new VelcroPhysicsSystem());
 
             _ecsContainer.CreateNewEntity();
 

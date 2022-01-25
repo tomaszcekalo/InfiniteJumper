@@ -18,6 +18,7 @@
     <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
     <PackageReference Include="Undine.DefaultEcs" Version="1.0.0" />
     <PackageReference Include="Undine.MonoGame" Version="0.0.2" />
+    <PackageReference Include="Undine.VelcroPhysics.MonoGame" Version="0.0.4" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
