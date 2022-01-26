@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using Undine.Core;
 using Undine.DefaultEcs;
-using Undine.VelcroPhysics.MonoGame;
 
 namespace InfiniteJumper
 {
@@ -23,12 +22,14 @@ namespace InfiniteJumper
         private Texture2D _gory;
         private Texture2D _niebo;
         private Texture2D _platform;
-        private Texture2D _player;
+        private Texture2D _playerTexture;
         private SpriteFont _font;
         private SpriteAnimationComponent _playerAnimation;
         private SpriteAnimationComponent _coinAnimation;
         private EcsContainer _ecsContainer;
+        private IUnifiedEntity _player;
         private IGameStateManager _gameStateManager;
+        private CustomPhysicsSystem _physics;
 
         public Game1()
         {
@@ -52,9 +53,16 @@ namespace InfiniteJumper
 
             _ecsContainer.AddSystem(new SpriteAnimationSystem());
             _ecsContainer.AddSystem(new JumpSystem());
-            _ecsContainer.AddSystem(new VelcroPhysicsSystem());
+            _physics = new CustomPhysicsSystem(new Vector2(0, 111));
+            _ecsContainer.AddSystem(_physics);
 
-            _ecsContainer.CreateNewEntity();
+            _player = _ecsContainer.CreateNewEntity();
+            var playerPhysics = new CustomPhysicsComponent()
+            {
+                Box = new Rectangle(Point.Zero, new Point(24, 48)),
+                IsAffectedByGravity = true
+            };
+            _player.AddComponent(playerPhysics);
 
             _gameStateManager = new GameStateManager();
 
@@ -71,7 +79,7 @@ namespace InfiniteJumper
             _gory = Content.Load<Texture2D>("gory");
             _niebo = Content.Load<Texture2D>("niebo");
             _platform = Content.Load<Texture2D>("platform");
-            _player = Content.Load<Texture2D>("player");
+            _playerTexture = Content.Load<Texture2D>("player");
             _font = Content.Load<SpriteFont>("ClickToStartFont");
 
             _playerAnimation = new SpriteAnimationComponent()
@@ -80,8 +88,8 @@ namespace InfiniteJumper
                 FPS = 4,
                 Frames = new List<SpriteComponent>()
                 {
-                    new SpriteComponent(_player,new Rectangle(0,0,24,48)),
-                    new SpriteComponent(_player,new Rectangle(24,0,24,48))
+                    new SpriteComponent(_playerTexture,new Rectangle(0,0,24,48)),
+                    new SpriteComponent(_playerTexture,new Rectangle(24,0,24,48))
                 }
             };
 
@@ -117,6 +125,8 @@ namespace InfiniteJumper
                 _gameStateManager.IsPlaying = true;
                 MediaPlayer.Play(_music);
             }
+            _physics.ElapsedGameTimeTotalSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            _ecsContainer.Run();
 
             base.Update(gameTime);
         }
@@ -148,12 +158,14 @@ namespace InfiniteJumper
                     new Point(mountainBase, 0),
                     _gory.Bounds.Size),
                     Color.White);
+                //draw player
                 _playerAnimation.Update(gameTime.ElapsedGameTime.TotalSeconds);
                 _spriteBatch.Draw(
                     _playerAnimation.CurrentFrame.Texture,
-                    Vector2.Zero,
+                    _player.GetComponent<CustomPhysicsComponent>().Box,
                     _playerAnimation.CurrentFrame.SourceRectangle,
                     Color.White);
+                // draw coin
                 _coinAnimation.Update(gameTime.ElapsedGameTime.TotalSeconds);
                 _spriteBatch.Draw(
                     _coinAnimation.CurrentFrame.Texture,

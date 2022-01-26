@@ -11,6 +11,7 @@ namespace InfiniteJumper
 
         public static void SetDisplayUnitToSimUnitRatio(float meterInPixels)
         {
+            _meterInPixels = meterInPixels;
         }
 
         public static Vector2 ToSimUnits(Vector2 vector)
