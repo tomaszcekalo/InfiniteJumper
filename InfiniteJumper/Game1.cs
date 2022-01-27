@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using Undine.Core;
 using Undine.DefaultEcs;
+using Undine.MonoGame;
 
 namespace InfiniteJumper
 {
@@ -26,8 +27,14 @@ namespace InfiniteJumper
         private SpriteFont _font;
         private SpriteAnimationComponent _playerAnimation;
         private SpriteAnimationComponent _coinAnimation;
+        private IUnifiedEntity _coin;
         private EcsContainer _ecsContainer;
+        private SpriteAnimationSystem _spriteAnimationSystem;
+        private ISystem _spriteAnimationSystemContainer;
+
+        //private SpriteAnimationSystem _spriteAnimationSystem;
         private IUnifiedEntity _player;
+
         private IGameStateManager _gameStateManager;
         private CustomPhysicsSystem _physics;
 
@@ -47,31 +54,28 @@ namespace InfiniteJumper
             float meterInPixels = 16;
             ConvertUnits.SetDisplayUnitToSimUnitRatio(meterInPixels);
 
-            _ecsContainer = new DefaultEcsContainer();
-            //_ecsContainer = new MinEcsContainer();
-            //_ecsContainer = new LeopotamEcsContainer();
-
-            _ecsContainer.AddSystem(new SpriteAnimationSystem());
-            _ecsContainer.AddSystem(new JumpSystem());
-            _physics = new CustomPhysicsSystem(new Vector2(0, 111));
-            _ecsContainer.AddSystem(_physics);
-
-            _player = _ecsContainer.CreateNewEntity();
-            var playerPhysics = new CustomPhysicsComponent()
-            {
-                Box = new Rectangle(Point.Zero, new Point(24, 48)),
-                IsAffectedByGravity = true
-            };
-            _player.AddComponent(playerPhysics);
-
-            _gameStateManager = new GameStateManager();
-
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            _ecsContainer = new DefaultEcsContainer();
+            //_ecsContainer = new MinEcsContainer();
+            //_ecsContainer = new LeopotamEcsContainer();
+
+            _spriteAnimationSystem = new SpriteAnimationSystem()
+            {
+                SpriteBatch = _spriteBatch
+            };
+            _spriteAnimationSystemContainer =
+            _ecsContainer.GetSystem(_spriteAnimationSystem);
+            _ecsContainer.AddSystem(new JumpSystem());
+            _physics = new CustomPhysicsSystem(new Vector2(0, 111));
+            _ecsContainer.AddSystem(_physics);
+
+            _gameStateManager = new GameStateManager();
             _music = Song.FromUri("music.mp3", new Uri("Content/music.mp3", UriKind.Relative));
             _startMusic = Song.FromUri("startMusic.mp3", new Uri("Content/startMusic.mp3", UriKind.Relative));
             _chmury = Content.Load<Texture2D>("chmury");
@@ -81,6 +85,20 @@ namespace InfiniteJumper
             _platform = Content.Load<Texture2D>("platform");
             _playerTexture = Content.Load<Texture2D>("player");
             _font = Content.Load<SpriteFont>("ClickToStartFont");
+
+            _player = _ecsContainer.CreateNewEntity();
+            var playerPhysics = new CustomPhysicsComponent()
+            {
+                Box = new Rectangle(Point.Zero, new Point(24, 48)),
+                IsAffectedByGravity = true
+            };
+            _player.AddComponent(playerPhysics);
+            _player.AddComponent(new ColorComponent() { Color = Color.White });
+            _player.AddComponent(new TransformComponent()
+            {
+                Position = new Vector2(),
+                Rotation = 0
+            });
 
             _playerAnimation = new SpriteAnimationComponent()
             {
@@ -92,6 +110,7 @@ namespace InfiniteJumper
                     new SpriteComponent(_playerTexture,new Rectangle(24,0,24,48))
                 }
             };
+            _player.AddComponent(_playerAnimation);
 
             _coinAnimation = new SpriteAnimationComponent()
             {
@@ -107,6 +126,14 @@ namespace InfiniteJumper
                     new SpriteComponent(_moneta,new Rectangle(100,0,20,20)),
                 }
             };
+            _coin = _ecsContainer.CreateNewEntity();
+            _coin.AddComponent(_coinAnimation);
+            _coin.AddComponent(new ColorComponent() { Color = Color.White });
+            _coin.AddComponent(new TransformComponent()
+            {
+                Position = new Vector2(64, 64),
+                Rotation = 0
+            });
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(_startMusic);
@@ -134,6 +161,8 @@ namespace InfiniteJumper
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            _spriteAnimationSystem.ElapsedGameTimeTotalSeconds =
+                (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
@@ -158,20 +187,7 @@ namespace InfiniteJumper
                     new Point(mountainBase, 0),
                     _gory.Bounds.Size),
                     Color.White);
-                //draw player
-                _playerAnimation.Update(gameTime.ElapsedGameTime.TotalSeconds);
-                _spriteBatch.Draw(
-                    _playerAnimation.CurrentFrame.Texture,
-                    _player.GetComponent<CustomPhysicsComponent>().Box,
-                    _playerAnimation.CurrentFrame.SourceRectangle,
-                    Color.White);
-                // draw coin
-                _coinAnimation.Update(gameTime.ElapsedGameTime.TotalSeconds);
-                _spriteBatch.Draw(
-                    _coinAnimation.CurrentFrame.Texture,
-                    new Vector2(64, 64),
-                    _coinAnimation.CurrentFrame.SourceRectangle,
-                    Color.White);
+                _spriteAnimationSystemContainer.ProcessAll();
             }
             else
             {
