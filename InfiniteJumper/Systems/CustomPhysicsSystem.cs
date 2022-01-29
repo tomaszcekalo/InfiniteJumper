@@ -4,33 +4,36 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Undine.Core;
+using Undine.MonoGame;
 
 namespace InfiniteJumper.Systems
 {
-    public class CustomPhysicsSystem : UnifiedSystem<CustomPhysicsComponent>
+    public class CustomPhysicsSystem : UnifiedSystem<CustomPhysicsComponent, TransformComponent>
     {
-        public Vector2 _gravity;
-        public float ElapsedGameTimeTotalSeconds { get; set; }
+        public Vector2 Gravity { get; }
+        public IGameTimeProvider GameTimeProvider { get; }
 
-        public CustomPhysicsSystem(Vector2 gravity)
+        public CustomPhysicsSystem(Vector2 gravity, IGameTimeProvider gameTimeProvider)
         {
-            _gravity = gravity;
+            Gravity = gravity;
+            GameTimeProvider = gameTimeProvider;
         }
 
-        public override void ProcessSingleEntity(
-            int entityId,
-            ref CustomPhysicsComponent t)
+        public override void ProcessSingleEntity(int entityId, ref CustomPhysicsComponent a, ref TransformComponent b)
         {
-            if (t.IsAffectedByGravity)
+            float time = (float)GameTimeProvider.GameTime.ElapsedGameTime.TotalSeconds;
+            if (a.IsAffectedByGravity)
             {
-                t.Speed.X += _gravity.X * ElapsedGameTimeTotalSeconds;
-                t.Speed.Y += _gravity.Y * ElapsedGameTimeTotalSeconds;
+                a.Speed.X += Gravity.X * time;
+                a.Speed.Y += Gravity.Y * time;
             }
 
-            t.Location.X += t.Speed.X * ElapsedGameTimeTotalSeconds;
-            t.Location.Y += t.Speed.Y * ElapsedGameTimeTotalSeconds;
+            b.Position.X += a.Speed.X * time;
+            b.Position.Y += a.Speed.Y * time;
 
-            t.Box.Location = t.Location.ToPoint();
+            a.Box.Location = b.Position.ToPoint();
+
+            //handle
         }
     }
 }

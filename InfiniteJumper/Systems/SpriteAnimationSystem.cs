@@ -11,8 +11,14 @@ namespace InfiniteJumper.Systems
     public class SpriteAnimationSystem
         : UnifiedSystem<SpriteAnimationComponent, TransformComponent, ColorComponent>
     {
-        public SpriteBatch SpriteBatch { get; set; }
-        public float ElapsedGameTimeTotalSeconds { get; set; }
+        public SpriteBatch SpriteBatch { get; }
+        public IGameTimeProvider GameTimeProvider { get; }
+
+        public SpriteAnimationSystem(SpriteBatch spriteBatch, IGameTimeProvider gameTimeProvider)
+        {
+            SpriteBatch = spriteBatch;
+            GameTimeProvider = gameTimeProvider;
+        }
 
         public override void ProcessSingleEntity(
             int entityId,
@@ -20,14 +26,17 @@ namespace InfiniteJumper.Systems
             ref TransformComponent b,
             ref ColorComponent c)
         {
-            a.Update(ElapsedGameTimeTotalSeconds);
+            a.Update(GameTimeProvider.GameTime.ElapsedGameTime.TotalSeconds);
             SpriteBatch.Draw(
                 texture: a.CurrentFrame.Texture,
                 position: b.Position,
                 sourceRectangle: a.CurrentFrame.SourceRectangle,
-                color: c.Color
-                //rotation:b.Rotation,
-                //origin:
+                color: c.Color,
+                rotation: b.Rotation,
+                origin: b.Origin,
+                scale: b.Scale,
+                effects: SpriteEffects.None,
+                layerDepth: a.LayerDepth
                 );
         }
     }

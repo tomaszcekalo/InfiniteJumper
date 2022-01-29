@@ -15,6 +15,8 @@ namespace InfiniteJumper
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
+        private GameTimeProvider _drawGameTimeProvider;
+        private GameTimeProvider _updateGameTimeProvider;
         private SpriteBatch _spriteBatch;
         private Song _music;
         private Song _startMusic;
@@ -29,8 +31,7 @@ namespace InfiniteJumper
         private SpriteAnimationComponent _coinAnimation;
         private IUnifiedEntity _coin;
         private EcsContainer _ecsContainer;
-        private SpriteAnimationSystem _spriteAnimationSystem;
-        private ISystem _spriteAnimationSystemContainer;
+        private ISystem _spriteAnimationSystem;
 
         //private SpriteAnimationSystem _spriteAnimationSystem;
         private IUnifiedEntity _player;
@@ -59,20 +60,19 @@ namespace InfiniteJumper
 
         protected override void LoadContent()
         {
+            _drawGameTimeProvider = new GameTimeProvider();
+            _updateGameTimeProvider = new GameTimeProvider();
+
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _ecsContainer = new DefaultEcsContainer();
             //_ecsContainer = new MinEcsContainer();
             //_ecsContainer = new LeopotamEcsContainer();
 
-            _spriteAnimationSystem = new SpriteAnimationSystem()
-            {
-                SpriteBatch = _spriteBatch
-            };
-            _spriteAnimationSystemContainer =
-            _ecsContainer.GetSystem(_spriteAnimationSystem);
+            _spriteAnimationSystem =
+            _ecsContainer.GetSystem(new SpriteAnimationSystem(_spriteBatch, _drawGameTimeProvider));
             _ecsContainer.AddSystem(new JumpSystem());
-            _physics = new CustomPhysicsSystem(new Vector2(0, 111));
+            _physics = new CustomPhysicsSystem(new Vector2(0, 111), _updateGameTimeProvider);
             _ecsContainer.AddSystem(_physics);
 
             _gameStateManager = new GameStateManager();
@@ -97,7 +97,8 @@ namespace InfiniteJumper
             _player.AddComponent(new TransformComponent()
             {
                 Position = new Vector2(),
-                Rotation = 0
+                Rotation = 0,
+                Scale = Vector2.One
             });
 
             _playerAnimation = new SpriteAnimationComponent()
@@ -132,7 +133,8 @@ namespace InfiniteJumper
             _coin.AddComponent(new TransformComponent()
             {
                 Position = new Vector2(64, 64),
-                Rotation = 0
+                Rotation = 0,
+                Scale = Vector2.One
             });
 
             MediaPlayer.IsRepeating = true;
@@ -143,6 +145,7 @@ namespace InfiniteJumper
 
         protected override void Update(GameTime gameTime)
         {
+            _updateGameTimeProvider.GameTime = gameTime;
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -152,7 +155,6 @@ namespace InfiniteJumper
                 _gameStateManager.IsPlaying = true;
                 MediaPlayer.Play(_music);
             }
-            _physics.ElapsedGameTimeTotalSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             _ecsContainer.Run();
 
             base.Update(gameTime);
@@ -160,9 +162,8 @@ namespace InfiniteJumper
 
         protected override void Draw(GameTime gameTime)
         {
+            _drawGameTimeProvider.GameTime = gameTime;
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            _spriteAnimationSystem.ElapsedGameTimeTotalSeconds =
-                (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
@@ -187,7 +188,7 @@ namespace InfiniteJumper
                     new Point(mountainBase, 0),
                     _gory.Bounds.Size),
                     Color.White);
-                _spriteAnimationSystemContainer.ProcessAll();
+                _spriteAnimationSystem.ProcessAll();
             }
             else
             {

@@ -13,6 +13,8 @@ namespace InfiniteJumper.Components
         private double _frameTime;
         public List<SpriteComponent> Frames { get; set; }
 
+        public int LayerDepth { get; set; }
+
         public SpriteComponent CurrentFrame
         {
             get
