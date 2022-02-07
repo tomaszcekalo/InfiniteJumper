@@ -13,5 +13,10 @@ namespace InfiniteJumper.Components
         public bool IsAffectedByGravity { get; set; }
         public bool IsSolid { get; set; }
         public bool CanColide { get; set; }
+
+        public void SetSpeedY(float vy)
+        {
+            Speed.Y = vy;
+        }
     }
 }

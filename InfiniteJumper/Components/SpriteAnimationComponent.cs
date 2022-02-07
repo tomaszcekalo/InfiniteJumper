@@ -38,11 +38,14 @@ namespace InfiniteJumper.Components
 
         public void Update(double delta)
         {
-            _delta += delta;
-            if (_delta > _frameTime)
+            if (Frames.Count > 1)
             {
-                _delta -= _frameTime;
-                CurrentFrameNumber = (CurrentFrameNumber + 1) % Frames.Count;
+                _delta += delta;
+                if (_delta > _frameTime)
+                {
+                    _delta -= _frameTime;
+                    CurrentFrameNumber = (CurrentFrameNumber + 1) % Frames.Count;
+                }
             }
         }
     }
