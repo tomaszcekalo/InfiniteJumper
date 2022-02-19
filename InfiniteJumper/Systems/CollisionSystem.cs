@@ -14,8 +14,13 @@ namespace InfiniteJumper.Systems
         private int dx, dy, disX, disY, adx;
         public List<IUnifiedEntity> Collidables = new List<IUnifiedEntity>();
 
-        public override void ProcessSingleEntity(int entityId, ref CollisionComponent a, ref CustomPhysicsComponent b, ref TransformComponent c)
+        public override void ProcessSingleEntity(
+            int entityId,
+            ref CollisionComponent a,
+            ref CustomPhysicsComponent b,
+            ref TransformComponent c)
         {
+            a.ColidesWithSolid = false;
             foreach (var collidable in Collidables)
             {
                 var ccpc = collidable.GetComponent<CustomPhysicsComponent>();
@@ -23,6 +28,7 @@ namespace InfiniteJumper.Systems
                 {
                     if (ccpc.IsSolid)
                     {
+                        a.ColidesWithSolid = true;
                         dx = b.Box.Center.X - ccpc.Box.Center.X;
                         dy = b.Box.Center.Y - ccpc.Box.Center.Y;
                         disX = Math.Sign(dx) * (ccpc.Box.Width / 2 + b.Box.Width / 2) - dx;

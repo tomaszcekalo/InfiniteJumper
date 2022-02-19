@@ -8,5 +8,6 @@ namespace InfiniteJumper.Components
 {
     public struct CollisionComponent
     {
+        public bool ColidesWithSolid { get; internal set; }
     }
 }

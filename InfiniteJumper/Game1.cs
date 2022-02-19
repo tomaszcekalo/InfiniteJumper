@@ -31,7 +31,7 @@ namespace InfiniteJumper
         private EcsContainer _ecsContainer;
         private ISystem _spriteAnimationSystem;
         private IUnifiedEntity _player;
-
+        private Camera2D _camera;
         private IGameStateManager _gameStateManager;
         private CustomPhysicsSystem _physics;
 
@@ -65,15 +65,15 @@ namespace InfiniteJumper
             //_ecsContainer = new MinEcsContainer();
             //_ecsContainer = new LeopotamEcsContainer();
 
+            _gameStateManager = new GameStateManager();
             _spriteAnimationSystem =
             _ecsContainer.GetSystem(new SpriteAnimationSystem(_spriteBatch, _drawGameTimeProvider));
-            _ecsContainer.AddSystem(new JumpSystem());
-            _physics = new CustomPhysicsSystem(new Vector2(0, 111), _updateGameTimeProvider);
+            _ecsContainer.AddSystem(new JumpSystem(_gameStateManager));
+            _physics = new CustomPhysicsSystem(new Vector2(0, 333), _updateGameTimeProvider);
             _ecsContainer.AddSystem(_physics);
             var collisionSystem = new CollisionSystem();
             _ecsContainer.AddSystem(collisionSystem);
 
-            _gameStateManager = new GameStateManager();
             _music = Song.FromUri("music.mp3", new Uri("Content/music.mp3", UriKind.Relative));
             _startMusic = Song.FromUri("startMusic.mp3", new Uri("Content/startMusic.mp3", UriKind.Relative));
             _chmury = Content.Load<Texture2D>("chmury");
@@ -85,6 +85,15 @@ namespace InfiniteJumper
             _font = Content.Load<SpriteFont>("ClickToStartFont");
 
             _player = _ecsContainer.CreateNewEntity();
+            _camera = new Camera2D(this)
+            {
+                Focus = _player
+            };
+            _camera.Initialize();
+            _player.AddComponent(new JumpComponent()
+            {
+                JumpSpeed = -222
+            });
             var playerPhysics = new CustomPhysicsComponent()
             {
                 Box = new Rectangle(Point.Zero, new Point(24, 48)),
@@ -203,11 +212,11 @@ namespace InfiniteJumper
         {
             _drawGameTimeProvider.GameTime = gameTime;
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
             // TODO: Add your drawing code here
-            _spriteBatch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.LinearWrap);
             if (_gameStateManager.IsPlaying)
             {
+                _spriteBatch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.LinearWrap);
+                _camera.Update(gameTime);
                 _spriteBatch.Draw(_niebo, _niebo.Bounds, Color.White);
                 var cloudBase = (-(int)(gameTime.TotalGameTime.TotalMilliseconds / 50)) % _chmury.Width;
                 _spriteBatch.Draw(_chmury, new Rectangle(
@@ -227,12 +236,16 @@ namespace InfiniteJumper
                     new Point(mountainBase, 0),
                     _gory.Bounds.Size),
                     Color.White);
+                _spriteBatch.End();
+                _spriteBatch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.LinearWrap, transformMatrix: _camera.GetViewMatrix(1));
                 _spriteAnimationSystem.ProcessAll();
-                int width = 16;
+                _spriteBatch.End();
+                //int width = 16;
                 //_spriteBatch.Draw(_platform, new Rectangle(0, 320, 32 * width, 32), new Rectangle(0, 0, 32 * width, 32), Color.White);
             }
             else
             {
+                _spriteBatch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.LinearWrap);
                 var textSize = _font.MeasureString("Click to start");
                 _spriteBatch.DrawString(
                     _font,
@@ -241,10 +254,10 @@ namespace InfiniteJumper
                         _graphics.PreferredBackBufferWidth / 2 - textSize.X / 2,
                         _graphics.PreferredBackBufferHeight / 2),
                     Color.White);
+                _spriteBatch.End();
             }
-            var playerCPC = _player.GetComponent<CustomPhysicsComponent>();
-            _spriteBatch.DrawString(_font, playerCPC.Speed.Y.ToString(), new Vector2(256, 256), Color.Red);
-            _spriteBatch.End();
+            //var playerCPC = _player.GetComponent<CustomPhysicsComponent>();
+            //_spriteBatch.DrawString(_font, playerCPC.Speed.Y.ToString(), new Vector2(256, 256), Color.Red);
 
             base.Draw(gameTime);
         }
