@@ -69,7 +69,10 @@ namespace InfiniteJumper
             _spriteAnimationSystem =
             _ecsContainer.GetSystem(new SpriteAnimationSystem(_spriteBatch, _drawGameTimeProvider));
             _ecsContainer.AddSystem(new JumpSystem(_gameStateManager));
-            _physics = new CustomPhysicsSystem(new Vector2(0, 333), _updateGameTimeProvider);
+            _physics = new CustomPhysicsSystem(
+                new Vector2(0, 333),
+                _updateGameTimeProvider,
+                _gameStateManager);
             _ecsContainer.AddSystem(_physics);
             var collisionSystem = new CollisionSystem();
             _ecsContainer.AddSystem(collisionSystem);
@@ -99,7 +102,7 @@ namespace InfiniteJumper
                 Box = new Rectangle(Point.Zero, new Point(24, 48)),
                 IsAffectedByGravity = true,
                 Speed = new Vector2(
-                    111,
+                    155,
                     0)
             };
             _player.AddComponent(playerPhysics);
@@ -154,32 +157,58 @@ namespace InfiniteJumper
             });
             collisionSystem.Collidables.Add(_coin);
 
-            int platformLength = 32;
-            for (int i = 0; i < 1; i++)
+            //starting platform
+            var white = new ColorComponent() { Color = Color.White };
+            var initialPlatformAnimation = new SpriteAnimationComponent()
             {
-                var white = new ColorComponent() { Color = Color.White };
+                CurrentFrameNumber = 0,
+                FPS = 1,
+                Frames = new List<SpriteComponent>()
+                    {
+                        new SpriteComponent(_platform, new Rectangle(0,0,1024,32))
+                    }
+            };
+            var initialPlatform = _ecsContainer.CreateNewEntity();
+            initialPlatform.AddComponent(initialPlatformAnimation);
+            initialPlatform.AddComponent(white);
+            initialPlatform.AddComponent(new TransformComponent()
+            {
+                Position = new Vector2(0, 512),
+                Rotation = 0,
+                Scale = Vector2.One
+            });
+            initialPlatform.AddComponent(new CustomPhysicsComponent()
+            {
+                CanColide = true,
+                Box = new Rectangle(0, 0, 1024, 32),
+                IsSolid = true
+            });
+            collisionSystem.Collidables.Add(initialPlatform);
+
+            for (int i = 1; i <= 4; i++)
+            {
+                var platform = _ecsContainer.CreateNewEntity();
                 var platformAnimation = new SpriteAnimationComponent()
                 {
                     CurrentFrameNumber = 0,
                     FPS = 1,
                     Frames = new List<SpriteComponent>()
                     {
-                        new SpriteComponent(_platform, new Rectangle(0,0,32*platformLength,32))
+                        new SpriteComponent(_platform, new Rectangle(0,0,32*6,32))
                     }
                 };
-                var platform = _ecsContainer.CreateNewEntity();
                 platform.AddComponent(platformAnimation);
                 platform.AddComponent(white);
                 platform.AddComponent(new TransformComponent()
                 {
-                    Position = new Vector2(i * 32, 512),
+                    Position = new Vector2(832 + i * 256, 512),
                     Rotation = 0,
                     Scale = Vector2.One
                 });
                 platform.AddComponent(new CustomPhysicsComponent()
                 {
                     CanColide = true,
-                    Box = new Rectangle(0, 0, 32 * platformLength, 32),
+                    Box = new Rectangle(0, 0, 32 * 6, 32),
                     IsSolid = true
                 });
                 collisionSystem.Collidables.Add(platform);

@@ -12,15 +12,22 @@ namespace InfiniteJumper.Systems
     {
         public Vector2 Gravity { get; }
         public IGameTimeProvider GameTimeProvider { get; }
+        public IGameStateManager GameStateManager { get; }
 
-        public CustomPhysicsSystem(Vector2 gravity, IGameTimeProvider gameTimeProvider)
+        public CustomPhysicsSystem(
+            Vector2 gravity,
+            IGameTimeProvider gameTimeProvider,
+            IGameStateManager gameStateManager)
         {
             Gravity = gravity;
             GameTimeProvider = gameTimeProvider;
+            GameStateManager = gameStateManager;
         }
 
         public override void ProcessSingleEntity(int entityId, ref CustomPhysicsComponent a, ref TransformComponent b)
         {
+            if (!GameStateManager.IsPlaying)
+                return;
             float time = (float)GameTimeProvider.GameTime.ElapsedGameTime.TotalSeconds;
             if (a.IsAffectedByGravity)
             {
