@@ -213,6 +213,7 @@ namespace InfiniteJumper
                 });
                 collisionSystem.Collidables.Add(platform);
             }
+            //add wall adding system
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(_startMusic);
