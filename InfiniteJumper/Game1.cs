@@ -93,6 +93,9 @@ namespace InfiniteJumper
                 Focus = _player
             };
             _camera.Initialize();
+
+            _ecsContainer.AddSystem(new WallAddingSystem(_camera));
+
             _player.AddComponent(new JumpComponent()
             {
                 JumpSpeed = -222
@@ -185,7 +188,7 @@ namespace InfiniteJumper
             });
             collisionSystem.Collidables.Add(initialPlatform);
 
-            for (int i = 1; i <= 4; i++)
+            for (int i = 1; i <= 6; i++)
             {
                 var platform = _ecsContainer.CreateNewEntity();
                 var platformAnimation = new SpriteAnimationComponent()
@@ -201,7 +204,7 @@ namespace InfiniteJumper
                 platform.AddComponent(white);
                 platform.AddComponent(new TransformComponent()
                 {
-                    Position = new Vector2(832 + i * 256, 512),
+                    Position = new Vector2(900 + i * 251, 512),
                     Rotation = 0,
                     Scale = Vector2.One
                 });
@@ -211,6 +214,7 @@ namespace InfiniteJumper
                     Box = new Rectangle(0, 0, 32 * 6, 32),
                     IsSolid = true
                 });
+                platform.AddComponent(new WallComponent());
                 collisionSystem.Collidables.Add(platform);
             }
             //add wall adding system

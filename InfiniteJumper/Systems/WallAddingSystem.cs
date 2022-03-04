@@ -20,13 +20,12 @@ namespace InfiniteJumper.Systems
 
         public override void ProcessSingleEntity(int entityId, ref TransformComponent a, ref CustomPhysicsComponent b, ref WallComponent c)
         {
-            if (Camera2D.IsInView(a.Position, b.Box))
+            if (b.Box.Right < Camera2D.Position.X)
             {
-                return;
+                a.Position = new Microsoft.Xna.Framework.Vector2(a.Position.X + 1500, 512);
+
+                b.Box.Location = a.Position.ToPoint();
             }
-            a.Position = new Microsoft.Xna.Framework.Vector2(
-                Camera2D.ScreenCenter.X + Camera2D.Game.GraphicsDevice.Viewport.Width,
-                Camera2D.ScreenCenter.Y);
         }
     }
 }
