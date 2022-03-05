@@ -68,7 +68,7 @@ namespace InfiniteJumper
             _gameStateManager = new GameStateManager();
             _spriteAnimationSystem =
             _ecsContainer.GetSystem(new SpriteAnimationSystem(_spriteBatch, _drawGameTimeProvider));
-            _ecsContainer.AddSystem(new JumpSystem(_gameStateManager));
+            _ecsContainer.AddSystem(new JumpSystem(_gameStateManager, _updateGameTimeProvider, 750));//TODO: this is magic value
             _physics = new CustomPhysicsSystem(
                 new Vector2(0, 333),
                 _updateGameTimeProvider,

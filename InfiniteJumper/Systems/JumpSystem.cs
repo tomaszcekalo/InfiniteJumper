@@ -10,12 +10,19 @@ namespace InfiniteJumper.Systems
 {
     internal class JumpSystem : UnifiedSystem<CollisionComponent, JumpComponent, CustomPhysicsComponent>
     {
-        public JumpSystem(IGameStateManager gameStateManager)
+        public JumpSystem(
+            IGameStateManager gameStateManager,
+            IGameTimeProvider gameTimeProvider,
+            int lostTreshold)
         {
             GameStateManager = gameStateManager;
+            GameTimeProvider = gameTimeProvider;
+            LostTreshold = lostTreshold;
         }
 
         public IGameStateManager GameStateManager { get; }
+        public IGameTimeProvider GameTimeProvider { get; }
+        public int LostTreshold { get; }
 
         public override void ProcessSingleEntity(
             int entityId,
@@ -23,6 +30,11 @@ namespace InfiniteJumper.Systems
             ref JumpComponent c,
             ref CustomPhysicsComponent d)
         {
+            if (d.Box.Top > LostTreshold)
+            {
+                GameStateManager.IsLosing = true;
+                GameStateManager.LostTimeStamp = GameTimeProvider.GameTime.TotalGameTime;
+            }
             if (GameStateManager.IsPlaying
                 && Keyboard.GetState().IsKeyDown(Keys.Space)
                 && b.ColidesWithSolid)

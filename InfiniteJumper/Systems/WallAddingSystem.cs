@@ -18,7 +18,11 @@ namespace InfiniteJumper.Systems
 
         public Camera2D Camera2D { get; }
 
-        public override void ProcessSingleEntity(int entityId, ref TransformComponent a, ref CustomPhysicsComponent b, ref WallComponent c)
+        public override void ProcessSingleEntity(
+            int entityId, 
+            ref TransformComponent a, 
+            ref CustomPhysicsComponent b, 
+            ref WallComponent c)
         {
             if (b.Box.Right < Camera2D.Position.X)
             {
