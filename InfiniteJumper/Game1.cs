@@ -273,7 +273,25 @@ namespace InfiniteJumper
                 _spriteBatch.End();
                 _spriteBatch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.LinearWrap, transformMatrix: _camera.GetViewMatrix(1));
                 _spriteAnimationSystem.ProcessAll();
+                if (_gameStateManager.IsLosing)
+                {
+                    float secondsElapsed = (float)(gameTime.TotalGameTime.TotalSeconds - _gameStateManager.LostTimeStamp.TotalSeconds);
+                    var animationDurationInSeconds = 2f;
+                    var opacity = MathF.Max((animationDurationInSeconds - secondsElapsed) / animationDurationInSeconds, 0);
+                    if (opacity == 0)
+                    {
+                        _gameStateManager.IsPlaying = false;
+                    }
+                    ScreenFiller.FillRectangle(
+                        _spriteBatch,
+                        new Rectangle(
+                            _camera.Position.ToPoint(),
+                            GraphicsDevice.Viewport.Bounds.Size),
+                        new Color(Color.Red, opacity),
+                        0);
+                }
                 _spriteBatch.End();
+
                 //int width = 16;
                 //_spriteBatch.Draw(_platform, new Rectangle(0, 320, 32 * width, 32), new Rectangle(0, 0, 32 * width, 32), Color.White);
             }

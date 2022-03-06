@@ -30,12 +30,12 @@ namespace InfiniteJumper.Systems
             ref JumpComponent c,
             ref CustomPhysicsComponent d)
         {
-            if (d.Box.Top > LostTreshold)
+            if (d.Box.Top > LostTreshold && !GameStateManager.IsLosing)
             {
                 GameStateManager.IsLosing = true;
                 GameStateManager.LostTimeStamp = GameTimeProvider.GameTime.TotalGameTime;
             }
-            if (GameStateManager.IsPlaying
+            else if (GameStateManager.IsPlaying
                 && Keyboard.GetState().IsKeyDown(Keys.Space)
                 && b.ColidesWithSolid)
             {
