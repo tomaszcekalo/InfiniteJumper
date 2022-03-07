@@ -1,6 +1,7 @@
 ﻿using InfiniteJumper.Components;
 using InfiniteJumper.Systems;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
@@ -27,6 +28,8 @@ namespace InfiniteJumper
         private Texture2D _platform;
         private Texture2D _playerTexture;
         private SpriteFont _font;
+        private SoundEffect _coinSound;
+        private SoundEffect _dieSound;
         private IUnifiedEntity _coin;
         private EcsContainer _ecsContainer;
         private ISystem _spriteAnimationSystem;
@@ -68,7 +71,8 @@ namespace InfiniteJumper
             _gameStateManager = new GameStateManager();
             _spriteAnimationSystem =
             _ecsContainer.GetSystem(new SpriteAnimationSystem(_spriteBatch, _drawGameTimeProvider));
-            _ecsContainer.AddSystem(new JumpSystem(_gameStateManager, _updateGameTimeProvider, 750));//TODO: this is magic value
+            _dieSound = Content.Load<SoundEffect>("die");
+            _ecsContainer.AddSystem(new JumpSystem(_gameStateManager, _updateGameTimeProvider, _dieSound, 750));//TODO: this is magic value
             _physics = new CustomPhysicsSystem(
                 new Vector2(0, 333),
                 _updateGameTimeProvider,
@@ -86,6 +90,7 @@ namespace InfiniteJumper
             _platform = Content.Load<Texture2D>("platform");
             _playerTexture = Content.Load<Texture2D>("player");
             _font = Content.Load<SpriteFont>("ClickToStartFont");
+            _coinSound = Content.Load<SoundEffect>("coin");
 
             _player = _ecsContainer.CreateNewEntity();
             _camera = new Camera2D(this)
@@ -281,6 +286,7 @@ namespace InfiniteJumper
                     if (opacity == 0)
                     {
                         _gameStateManager.IsPlaying = false;
+                        MediaPlayer.Play(_startMusic);
                     }
                     ScreenFiller.FillRectangle(
                         _spriteBatch,

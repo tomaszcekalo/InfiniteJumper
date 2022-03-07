@@ -1,4 +1,5 @@
 ﻿using InfiniteJumper.Components;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
@@ -13,15 +14,18 @@ namespace InfiniteJumper.Systems
         public JumpSystem(
             IGameStateManager gameStateManager,
             IGameTimeProvider gameTimeProvider,
+            SoundEffect dieSound,
             int lostTreshold)
         {
             GameStateManager = gameStateManager;
             GameTimeProvider = gameTimeProvider;
+            DieSound = dieSound;
             LostTreshold = lostTreshold;
         }
 
         public IGameStateManager GameStateManager { get; }
         public IGameTimeProvider GameTimeProvider { get; }
+        public SoundEffect DieSound { get; }
         public int LostTreshold { get; }
 
         public override void ProcessSingleEntity(
@@ -34,6 +38,7 @@ namespace InfiniteJumper.Systems
             {
                 GameStateManager.IsLosing = true;
                 GameStateManager.LostTimeStamp = GameTimeProvider.GameTime.TotalGameTime;
+                DieSound.Play();
             }
             else if (GameStateManager.IsPlaying
                 && Keyboard.GetState().IsKeyDown(Keys.Space)
