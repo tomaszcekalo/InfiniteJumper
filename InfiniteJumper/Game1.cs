@@ -240,6 +240,7 @@ namespace InfiniteJumper
             if (!_gameStateManager.IsPlaying && Keyboard.GetState().IsKeyDown(Keys.Space))
             {
                 _gameStateManager.IsPlaying = true;
+                _gameStateManager.IsLosing = false;
                 MediaPlayer.Play(_music);
             }
             _ecsContainer.Run();
@@ -287,6 +288,8 @@ namespace InfiniteJumper
                     {
                         _gameStateManager.IsPlaying = false;
                         MediaPlayer.Play(_startMusic);
+                        ref var t = ref _player.GetComponent<TransformComponent>();
+                        t.Position = new Vector2(0, 0);
                     }
                     ScreenFiller.FillRectangle(
                         _spriteBatch,
