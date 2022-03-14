@@ -292,6 +292,7 @@ namespace InfiniteJumper
                         t.Position = new Vector2(0, 0);
                         ref var p = ref _player.GetComponent<CustomPhysicsComponent>();
                         p.Box.Location = new Point(0, 0);
+                        p.Speed = new Vector2(155, 0);
                         _camera.Position = new Vector2(0, 0);
                     }
                     ScreenFiller.FillRectangle(
@@ -303,9 +304,6 @@ namespace InfiniteJumper
                         0);
                 }
                 _spriteBatch.End();
-
-                //int width = 16;
-                //_spriteBatch.Draw(_platform, new Rectangle(0, 320, 32 * width, 32), new Rectangle(0, 0, 32 * width, 32), Color.White);
             }
             else
             {
@@ -320,9 +318,6 @@ namespace InfiniteJumper
                     Color.White);
                 _spriteBatch.End();
             }
-            //var playerCPC = _player.GetComponent<CustomPhysicsComponent>();
-            //_spriteBatch.DrawString(_font, playerCPC.Speed.Y.ToString(), new Vector2(256, 256), Color.Red);
-
             base.Draw(gameTime);
         }
     }
