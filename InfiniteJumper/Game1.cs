@@ -37,13 +37,14 @@ namespace InfiniteJumper
         private Camera2D _camera;
         private IGameStateManager _gameStateManager;
         private CustomPhysicsSystem _physics;
+        private List<IUnifiedEntity> _platforms = new List<IUnifiedEntity>();
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             //<canvas style="width: 1746px; height: 981.634px;" width="1334" height="750"></canvas>
-            _graphics.PreferredBackBufferHeight = 750;
-            _graphics.PreferredBackBufferWidth = 1334;
+            _graphics.PreferredBackBufferHeight = 750;//TODO: this is magic value
+            _graphics.PreferredBackBufferWidth = 1334;//TODO: this is magic value
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -55,6 +56,16 @@ namespace InfiniteJumper
             ConvertUnits.SetDisplayUnitToSimUnitRatio(meterInPixels);
 
             base.Initialize();
+        }
+
+        protected void ResetPlatformPosition()
+        {
+            for (int i = 0; i < _platforms.Count; i++)
+            {
+                var platform = _platforms[i];
+                ref var position = ref platform.GetComponent<TransformComponent>();
+                position.Position = new Vector2(900 + i * 251, 512);//TODO: this is magic value
+            }
         }
 
         protected override void LoadContent()
@@ -74,7 +85,7 @@ namespace InfiniteJumper
             _dieSound = Content.Load<SoundEffect>("die");
             _ecsContainer.AddSystem(new JumpSystem(_gameStateManager, _updateGameTimeProvider, _dieSound, 750));//TODO: this is magic value
             _physics = new CustomPhysicsSystem(
-                new Vector2(0, 333),
+                new Vector2(0, 333),//TODO: this is magic value
                 _updateGameTimeProvider,
                 _gameStateManager);
             _ecsContainer.AddSystem(_physics);
@@ -103,14 +114,14 @@ namespace InfiniteJumper
 
             _player.AddComponent(new JumpComponent()
             {
-                JumpSpeed = -222
+                JumpSpeed = -222//TODO: this is magic value
             });
             var playerPhysics = new CustomPhysicsComponent()
             {
-                Box = new Rectangle(Point.Zero, new Point(24, 48)),
+                Box = new Rectangle(Point.Zero, new Point(24, 48)),//TODO: this is magic value
                 IsAffectedByGravity = true,
                 Speed = new Vector2(
-                    155,
+                    155,//TODO: this is magic value
                     0)
             };
             _player.AddComponent(playerPhysics);
@@ -128,8 +139,8 @@ namespace InfiniteJumper
                 FPS = 4,
                 Frames = new List<SpriteComponent>()
                 {
-                    new SpriteComponent(_playerTexture,new Rectangle(0,0,24,48)),
-                    new SpriteComponent(_playerTexture,new Rectangle(24,0,24,48))
+                    new SpriteComponent(_playerTexture,new Rectangle(0,0,24,48)),//TODO: this is magic value
+                    new SpriteComponent(_playerTexture,new Rectangle(24,0,24,48))//TODO: this is magic value
                 }
             };
             _player.AddComponent(playerAnimation);
@@ -141,12 +152,12 @@ namespace InfiniteJumper
                 FPS = 6,
                 Frames = new List<SpriteComponent>()
                 {
-                    new SpriteComponent(_moneta,new Rectangle(0,0,20,20)),
-                    new SpriteComponent(_moneta,new Rectangle(20,0,20,20)),
-                    new SpriteComponent(_moneta,new Rectangle(40,0,20,20)),
-                    new SpriteComponent(_moneta,new Rectangle(60,0,20,20)),
-                    new SpriteComponent(_moneta,new Rectangle(80,0,20,20)),
-                    new SpriteComponent(_moneta,new Rectangle(100,0,20,20)),
+                    new SpriteComponent(_moneta,new Rectangle(0,0,20,20)),//TODO: this is magic value
+                    new SpriteComponent(_moneta,new Rectangle(20,0,20,20)),//TODO: this is magic value
+                    new SpriteComponent(_moneta,new Rectangle(40,0,20,20)),//TODO: this is magic value
+                    new SpriteComponent(_moneta,new Rectangle(60,0,20,20)),//TODO: this is magic value
+                    new SpriteComponent(_moneta,new Rectangle(80,0,20,20)),//TODO: this is magic value
+                    new SpriteComponent(_moneta,new Rectangle(100,0,20,20)),//TODO: this is magic value
                 }
             };
             _coin = _ecsContainer.CreateNewEntity();
@@ -154,14 +165,14 @@ namespace InfiniteJumper
             _coin.AddComponent(new ColorComponent() { Color = Color.White });
             _coin.AddComponent(new TransformComponent()
             {
-                Position = new Vector2(64, 64),
+                Position = new Vector2(64, 64),//TODO: this is magic value
                 Rotation = 0,
                 Scale = Vector2.One
             });
             _coin.AddComponent(new CustomPhysicsComponent()
             {
                 CanColide = true,
-                Box = new Rectangle(0, 0, 20, 20)
+                Box = new Rectangle(0, 0, 20, 20)//TODO: this is magic value
             });
             collisionSystem.Collidables.Add(_coin);
 
@@ -173,7 +184,7 @@ namespace InfiniteJumper
                 FPS = 1,
                 Frames = new List<SpriteComponent>()
                     {
-                        new SpriteComponent(_platform, new Rectangle(0,0,1024,32))
+                        new SpriteComponent(_platform, new Rectangle(0,0,1024,32))//TODO: this is magic value
                     }
             };
             var initialPlatform = _ecsContainer.CreateNewEntity();
@@ -181,14 +192,14 @@ namespace InfiniteJumper
             initialPlatform.AddComponent(white);
             initialPlatform.AddComponent(new TransformComponent()
             {
-                Position = new Vector2(0, 512),
+                Position = new Vector2(0, 512),//TODO: this is magic value
                 Rotation = 0,
                 Scale = Vector2.One
             });
             initialPlatform.AddComponent(new CustomPhysicsComponent()
             {
                 CanColide = true,
-                Box = new Rectangle(0, 0, 1024, 32),
+                Box = new Rectangle(0, 0, 1024, 32),//TODO: this is magic value
                 IsSolid = true
             });
             collisionSystem.Collidables.Add(initialPlatform);
@@ -196,27 +207,28 @@ namespace InfiniteJumper
             for (int i = 1; i <= 6; i++)
             {
                 var platform = _ecsContainer.CreateNewEntity();
+                _platforms.Add(platform);
                 var platformAnimation = new SpriteAnimationComponent()
                 {
                     CurrentFrameNumber = 0,
                     FPS = 1,
                     Frames = new List<SpriteComponent>()
                     {
-                        new SpriteComponent(_platform, new Rectangle(0,0,32*6,32))
+                        new SpriteComponent(_platform, new Rectangle(0,0,32*6,32))//TODO: this is magic value
                     }
                 };
                 platform.AddComponent(platformAnimation);
                 platform.AddComponent(white);
                 platform.AddComponent(new TransformComponent()
                 {
-                    Position = new Vector2(900 + i * 251, 512),
+                    Position = new Vector2(900 + i * 251, 512),//TODO: this is magic value
                     Rotation = 0,
                     Scale = Vector2.One
                 });
                 platform.AddComponent(new CustomPhysicsComponent()
                 {
                     CanColide = true,
-                    Box = new Rectangle(0, 0, 32 * 6, 32),
+                    Box = new Rectangle(0, 0, 32 * 6, 32),//TODO: this is magic value
                     IsSolid = true
                 });
                 platform.AddComponent(new WallComponent());
@@ -294,6 +306,7 @@ namespace InfiniteJumper
                         p.Box.Location = new Point(0, 0);
                         p.Speed = new Vector2(155, 0);
                         _camera.Position = new Vector2(0, 0);
+                        ResetPlatformPosition();
                     }
                     ScreenFiller.FillRectangle(
                         _spriteBatch,
