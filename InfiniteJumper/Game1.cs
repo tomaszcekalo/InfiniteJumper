@@ -58,8 +58,18 @@ namespace InfiniteJumper
             base.Initialize();
         }
 
-        protected void ResetPlatformPosition()
+        protected void ResetGame()
         {
+            _gameStateManager.IsPlaying = false;
+            _gameStateManager.IsLosing = false;
+            MediaPlayer.Play(_startMusic);
+            ref var t = ref _player.GetComponent<TransformComponent>();
+            t.Position = new Vector2(0, 0);
+            ref var p = ref _player.GetComponent<CustomPhysicsComponent>();
+            p.Box.Location = new Point(0, 0);
+            p.Speed = new Vector2(155, 0);
+            _camera.Position = new Vector2(0, 0);
+
             for (int i = 0; i < _platforms.Count; i++)
             {
                 var platform = _platforms[i];
@@ -269,7 +279,7 @@ namespace InfiniteJumper
                 _spriteBatch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.LinearWrap);
                 _camera.Update(gameTime);
                 _spriteBatch.Draw(_niebo, _niebo.Bounds, Color.White);
-                var cloudBase = (-(int)(gameTime.TotalGameTime.TotalMilliseconds / 50)) % _chmury.Width;
+                var cloudBase = (-(int)(gameTime.TotalGameTime.TotalMilliseconds / 50)) % _chmury.Width;//TODO: 50 is magic constant
                 _spriteBatch.Draw(_chmury, new Rectangle(
                     new Point(cloudBase + _chmury.Width, 0),
                     _chmury.Bounds.Size),
@@ -278,7 +288,7 @@ namespace InfiniteJumper
                     new Point(cloudBase, 0),
                     _chmury.Bounds.Size),
                     Color.White);
-                var mountainBase = (-(int)(gameTime.TotalGameTime.TotalMilliseconds / 25)) % _gory.Width;
+                var mountainBase = (-(int)(gameTime.TotalGameTime.TotalMilliseconds / 25)) % _gory.Width;//TODO: 25 is magic constant
                 _spriteBatch.Draw(_gory, new Rectangle(
                     new Point(mountainBase + _gory.Width, 0),
                     _gory.Bounds.Size),
@@ -297,16 +307,7 @@ namespace InfiniteJumper
                     var opacity = MathF.Max((animationDurationInSeconds - secondsElapsed) / animationDurationInSeconds, 0);
                     if (opacity == 0)
                     {
-                        _gameStateManager.IsPlaying = false;
-                        _gameStateManager.IsLosing = false;
-                        MediaPlayer.Play(_startMusic);
-                        ref var t = ref _player.GetComponent<TransformComponent>();
-                        t.Position = new Vector2(0, 0);
-                        ref var p = ref _player.GetComponent<CustomPhysicsComponent>();
-                        p.Box.Location = new Point(0, 0);
-                        p.Speed = new Vector2(155, 0);
-                        _camera.Position = new Vector2(0, 0);
-                        ResetPlatformPosition();
+                        ResetGame();
                     }
                     ScreenFiller.FillRectangle(
                         _spriteBatch,
