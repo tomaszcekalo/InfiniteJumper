@@ -42,12 +42,12 @@ namespace InfiniteJumper.Systems
 
                         if (Math.Min(adx, Math.Abs(disY)) == adx)
                         {
-                            c.Position.X += disX;
+                            c.Position.X += disX;//adjust to origin
                             b.Box.X += disX;
                         }
                         else
                         {
-                            c.Position.Y += disY;
+                            c.Position.Y += disY;//adjust to origin
                             b.Box.Y += disY;
 
                             //playerCPC.Speed.Y = 0;

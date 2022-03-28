@@ -9,7 +9,7 @@ using Undine.MonoGame;
 
 namespace InfiniteJumper.Systems
 {
-    internal class JumpSystem : UnifiedSystem<CollisionComponent, JumpComponent, CustomPhysicsComponent>
+    internal class JumpSystem : UnifiedSystem<CollisionComponent, JumpComponent, CustomPhysicsComponent, RotationAnimationComponent>
     {
         public JumpSystem(
             IGameStateManager gameStateManager,
@@ -32,7 +32,8 @@ namespace InfiniteJumper.Systems
             int entityId,
             ref CollisionComponent b,
             ref JumpComponent c,
-            ref CustomPhysicsComponent d)
+            ref CustomPhysicsComponent d,
+            ref RotationAnimationComponent e)
         {
             if (d.Box.Top > LostTreshold && !GameStateManager.IsLosing)
             {
@@ -45,6 +46,7 @@ namespace InfiniteJumper.Systems
                 && b.ColidesWithSolid)
             {
                 d.SetSpeedY(c.JumpSpeed);
+                e.Elapsed = 0;
             }
         }
     }

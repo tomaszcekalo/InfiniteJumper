@@ -28,29 +28,29 @@ namespace InfiniteJumper.Systems
             ref ColorComponent c)
         {
             a.Update(GameTimeProvider.GameTime.ElapsedGameTime.TotalSeconds);
-            //SpriteBatch.Draw(
-            //    texture: a.CurrentFrame.Texture,
-            //    position: b.Position,
-            //    sourceRectangle: a.CurrentFrame.SourceRectangle,
-            //    color: c.Color,
-            //    rotation: b.Rotation,
-            //    origin: b.Origin,
-            //    scale: b.Scale,
-            //    effects: SpriteEffects.None,
-            //    layerDepth: a.LayerDepth
-            //    );
-            var destinationRectangle = new Rectangle(b.Position.ToPoint(), a.CurrentFrame.SourceRectangle.Size);
             SpriteBatch.Draw(
                 texture: a.CurrentFrame.Texture,
-                destinationRectangle: destinationRectangle,
+                position: b.Position + b.Origin,
                 sourceRectangle: a.CurrentFrame.SourceRectangle,
                 color: c.Color,
                 rotation: b.Rotation,
                 origin: b.Origin,
-                //scale: b.Scale,
+                scale: b.Scale,
                 effects: SpriteEffects.None,
                 layerDepth: a.LayerDepth
                 );
+            //var destinationRectangle = new Rectangle(b.Position.ToPoint(), a.CurrentFrame.SourceRectangle.Size);
+            //SpriteBatch.Draw(
+            //    texture: a.CurrentFrame.Texture,
+            //    destinationRectangle: destinationRectangle,
+            //    sourceRectangle: a.CurrentFrame.SourceRectangle,
+            //    color: c.Color,
+            //    rotation: b.Rotation,
+            //    origin: b.Origin,
+            //    //scale: b.Scale,
+            //    effects: SpriteEffects.None,
+            //    layerDepth: a.LayerDepth
+            //    );
         }
     }
 }

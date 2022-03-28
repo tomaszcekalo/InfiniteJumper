@@ -101,6 +101,10 @@ namespace InfiniteJumper
             _ecsContainer.AddSystem(_physics);
             var collisionSystem = new CollisionSystem();
             _ecsContainer.AddSystem(collisionSystem);
+            _ecsContainer.AddSystem(new RotationAnimationSystem()
+            {
+                GameTimeProvider = _updateGameTimeProvider
+            });
 
             _music = Song.FromUri("music.mp3", new Uri("Content/music.mp3", UriKind.Relative));
             _startMusic = Song.FromUri("startMusic.mp3", new Uri("Content/startMusic.mp3", UriKind.Relative));
@@ -140,7 +144,8 @@ namespace InfiniteJumper
             {
                 Position = new Vector2(),
                 Rotation = 0,
-                Scale = Vector2.One
+                Scale = Vector2.One,
+                Origin = new Vector2(12, 24)
             });
 
             var playerAnimation = new SpriteAnimationComponent()
@@ -155,6 +160,7 @@ namespace InfiniteJumper
             };
             _player.AddComponent(playerAnimation);
             _player.AddComponent(new CollisionComponent());
+            _player.AddComponent(new RotationAnimationComponent() { Duration = 1 });
 
             var coinAnimation = new SpriteAnimationComponent()
             {
