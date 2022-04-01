@@ -56,6 +56,10 @@ namespace InfiniteJumper.Systems
                             //thisEntity.AnimationState = 0;
                         }
                     }
+                    else
+                    {
+                        ;
+                    }
                 }
             }
         }
