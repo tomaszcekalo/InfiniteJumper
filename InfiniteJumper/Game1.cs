@@ -99,7 +99,10 @@ namespace InfiniteJumper
                 _updateGameTimeProvider,
                 _gameStateManager);
             _ecsContainer.AddSystem(_physics);
-            var collisionSystem = new CollisionSystem();
+            var collisionSystem = new CollisionSystem()
+            {
+                GameTimeProvider = _updateGameTimeProvider
+            };
             _ecsContainer.AddSystem(collisionSystem);
             _ecsContainer.AddSystem(new RotationAnimationSystem()
             {
@@ -126,10 +129,6 @@ namespace InfiniteJumper
 
             _ecsContainer.AddSystem(new WallAddingSystem(_camera));
 
-            _player.AddComponent(new JumpComponent()
-            {
-                JumpSpeed = -222//TODO: this is magic value
-            });
             var playerPhysics = new CustomPhysicsComponent()
             {
                 Box = new Rectangle(Point.Zero, new Point(24, 48)),//TODO: this is magic value
@@ -159,7 +158,11 @@ namespace InfiniteJumper
                 }
             };
             _player.AddComponent(playerAnimation);
-            _player.AddComponent(new CollisionComponent());
+            _player.AddComponent(new PlayerComponent()
+            {
+                HasDoubleJumped = true,
+                JumpSpeed = -222//TODO: this is magic value
+            });
             _player.AddComponent(new RotationAnimationComponent() { Duration = 1 });
 
             var coinAnimation = new SpriteAnimationComponent()

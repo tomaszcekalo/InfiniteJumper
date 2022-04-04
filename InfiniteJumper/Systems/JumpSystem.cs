@@ -9,8 +9,14 @@ using Undine.MonoGame;
 
 namespace InfiniteJumper.Systems
 {
-    internal class JumpSystem : UnifiedSystem<CollisionComponent, JumpComponent, CustomPhysicsComponent, RotationAnimationComponent>
+    internal class JumpSystem : UnifiedSystem<PlayerComponent, CustomPhysicsComponent, RotationAnimationComponent>
     {
+        private KeyboardState _kbState;
+        public IGameStateManager GameStateManager { get; }
+        public IGameTimeProvider GameTimeProvider { get; }
+        public SoundEffect DieSound { get; }
+        public int LostTreshold { get; }
+
         public JumpSystem(
             IGameStateManager gameStateManager,
             IGameTimeProvider gameTimeProvider,
@@ -23,31 +29,43 @@ namespace InfiniteJumper.Systems
             LostTreshold = lostTreshold;
         }
 
-        public IGameStateManager GameStateManager { get; }
-        public IGameTimeProvider GameTimeProvider { get; }
-        public SoundEffect DieSound { get; }
-        public int LostTreshold { get; }
-
         public override void ProcessSingleEntity(
             int entityId,
-            ref CollisionComponent b,
-            ref JumpComponent c,
-            ref CustomPhysicsComponent d,
-            ref RotationAnimationComponent e)
+            ref PlayerComponent a,
+            ref CustomPhysicsComponent b,
+            ref RotationAnimationComponent c)
         {
-            if (d.Box.Top > LostTreshold && !GameStateManager.IsLosing)
+            var kbCurrent = Keyboard.GetState();
+            if (b.Box.Top > LostTreshold && !GameStateManager.IsLosing)
             {
                 GameStateManager.IsLosing = true;
                 GameStateManager.LostTimeStamp = GameTimeProvider.GameTime.TotalGameTime;
                 DieSound.Play();
             }
             else if (GameStateManager.IsPlaying
-                && Keyboard.GetState().IsKeyDown(Keys.Space)
-                && b.ColidesWithSolid)
+                && kbCurrent.IsKeyDown(Keys.Space)
+                //&& _kbState.IsKeyUp(Keys.Space)
+                && a.ColidesWithSolid)
             {
-                d.SetSpeedY(c.JumpSpeed);
-                e.Elapsed = 0;
+                b.SetSpeedY(a.JumpSpeed);
+                //c.Elapsed = 0;
             }
+            else if (GameStateManager.IsPlaying
+                && kbCurrent.IsKeyDown(Keys.Space)
+                && _kbState.IsKeyUp(Keys.Space)
+                && !a.HasDoubleJumped
+                && b.Speed.Y > 24)
+            {
+                //cayote time
+                var diff = GameTimeProvider.GameTime.TotalGameTime.TotalSeconds - a.ColidedAt;
+                if (diff < 1)
+                {
+                    b.SetSpeedY(a.JumpSpeed);
+                    c.Elapsed = 0;
+                    a.HasDoubleJumped = true;
+                }
+            }
+            _kbState = kbCurrent;
         }
     }
 }

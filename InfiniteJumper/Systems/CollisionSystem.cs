@@ -9,18 +9,23 @@ using Undine.MonoGame;
 
 namespace InfiniteJumper.Systems
 {
-    public class CollisionSystem : UnifiedSystem<CollisionComponent, CustomPhysicsComponent, TransformComponent>
+    public class CollisionSystem : UnifiedSystem<PlayerComponent, CustomPhysicsComponent, TransformComponent>
     {
         private int dx, dy, disX, disY, adx;
         public List<IUnifiedEntity> Collidables = new List<IUnifiedEntity>();
 
+        public GameTimeProvider GameTimeProvider { get; set; }
+
         public override void ProcessSingleEntity(
             int entityId,
-            ref CollisionComponent a,
+            ref PlayerComponent a,
             ref CustomPhysicsComponent b,
             ref TransformComponent c)
         {
             a.ColidesWithSolid = false;
+            //var box = b.Box;
+            //box.Inflate(2, 2);
+
             foreach (var collidable in Collidables)
             {
                 var ccpc = collidable.GetComponent<CustomPhysicsComponent>();
@@ -29,6 +34,8 @@ namespace InfiniteJumper.Systems
                     if (ccpc.IsSolid)
                     {
                         a.ColidesWithSolid = true;
+                        a.HasDoubleJumped = false;
+                        a.ColidedAt = GameTimeProvider.GameTime.TotalGameTime.TotalSeconds;
                         dx = b.Box.Center.X - ccpc.Box.Center.X;
                         dy = b.Box.Center.Y - ccpc.Box.Center.Y;
                         disX = Math.Sign(dx) * (ccpc.Box.Width / 2 + b.Box.Width / 2) - dx;
@@ -50,10 +57,7 @@ namespace InfiniteJumper.Systems
                             c.Position.Y += disY;//adjust to origin
                             b.Box.Y += disY;
 
-                            //playerCPC.Speed.Y = 0;
                             b.SetSpeedY(0);
-                            //if (thisEntity.AnimationState == 2)
-                            //thisEntity.AnimationState = 0;
                         }
                     }
                     else
