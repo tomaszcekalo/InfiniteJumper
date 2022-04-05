@@ -5,8 +5,10 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Undine.Core;
 using Undine.DefaultEcs;
 using Undine.MonoGame;
@@ -38,6 +40,7 @@ namespace InfiniteJumper
         private IGameStateManager _gameStateManager;
         private CustomPhysicsSystem _physics;
         private List<IUnifiedEntity> _platforms = new List<IUnifiedEntity>();
+        private Settings _settings;
 
         public Game1()
         {
@@ -52,6 +55,12 @@ namespace InfiniteJumper
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            string path = "Settings.json";
+            if (File.Exists(path))
+            {
+                string readText = File.ReadAllText(path);
+                _settings = JsonConvert.DeserializeObject<Settings>(readText);
+            }
             float meterInPixels = 16;
             ConvertUnits.SetDisplayUnitToSimUnitRatio(meterInPixels);
 
@@ -93,7 +102,7 @@ namespace InfiniteJumper
             _spriteAnimationSystem =
             _ecsContainer.GetSystem(new SpriteAnimationSystem(_spriteBatch, _drawGameTimeProvider));
             _dieSound = Content.Load<SoundEffect>("die");
-            _ecsContainer.AddSystem(new JumpSystem(_gameStateManager, _updateGameTimeProvider, _dieSound, 750));//TODO: this is magic value
+            _ecsContainer.AddSystem(new JumpSystem(_gameStateManager, _updateGameTimeProvider, _dieSound, _settings.LostTreshold));
             _physics = new CustomPhysicsSystem(
                 new Vector2(0, 333),//TODO: this is magic value
                 _updateGameTimeProvider,
@@ -133,9 +142,7 @@ namespace InfiniteJumper
             {
                 Box = new Rectangle(Point.Zero, new Point(24, 48)),//TODO: this is magic value
                 IsAffectedByGravity = true,
-                Speed = new Vector2(
-                    155,//TODO: this is magic value
-                    0)
+                Speed = _settings.Player.Speed.ToVector2()
             };
             _player.AddComponent(playerPhysics);
             _player.AddComponent(new ColorComponent() { Color = Color.White });
@@ -161,7 +168,7 @@ namespace InfiniteJumper
             _player.AddComponent(new PlayerComponent()
             {
                 HasDoubleJumped = true,
-                JumpSpeed = -222//TODO: this is magic value
+                JumpSpeed = _settings.Player.JumpSpeed
             });
             _player.AddComponent(new RotationAnimationComponent() { Duration = 1 });
 
@@ -211,14 +218,14 @@ namespace InfiniteJumper
             initialPlatform.AddComponent(white);
             initialPlatform.AddComponent(new TransformComponent()
             {
-                Position = new Vector2(0, 512),//TODO: this is magic value
+                Position = _settings.InitialPlatform.Position.ToVector2(),
                 Rotation = 0,
                 Scale = Vector2.One
             });
             initialPlatform.AddComponent(new CustomPhysicsComponent()
             {
                 CanColide = true,
-                Box = new Rectangle(0, 0, 1024, 32),//TODO: this is magic value
+                Box = _settings.InitialPlatform.Box,
                 IsSolid = true
             });
             collisionSystem.Collidables.Add(initialPlatform);

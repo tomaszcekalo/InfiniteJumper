@@ -1,0 +1,38 @@
+{
+  "PreferredBackBuffer": {
+    "Height": 750,
+    "Width": 1334
+  },
+  "MeterInPixels": 16,
+  "PlatformPosition": {
+    "X": {
+      "Multiplier": 251,
+      "Offset": 900
+    },
+    "Y": 512
+  },
+  "LostTreshold": 750,
+  "Gravity": {
+    "X": 0,
+    "Y": 333
+  },
+  "Player": {
+    "Speed": {
+      "X": 155,
+      "Y": 0
+    },
+    "Jumpspeed": -222
+  },
+  "InitialPlatform": {
+    "Position": {
+      "X": 0,
+      "Y": 512
+    },
+    "Box": {
+      "X": 0,
+      "Y": 0,
+      "Width": 1024,
+      "Height": 32
+    }
+  }
+}
