@@ -56,6 +56,12 @@
 /processorParam:TextureFormat=Color
 /build:gory.png
 
+#begin jump.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:jump.wav
+
 #begin moneta.png
 /importer:TextureImporter
 /processor:TextureProcessor

@@ -32,6 +32,7 @@ namespace InfiniteJumper
         private SpriteFont _font;
         private SoundEffect _coinSound;
         private SoundEffect _dieSound;
+        private SoundEffect _jumpSound;
         private IUnifiedEntity _coin;
         private EcsContainer _ecsContainer;
         private ISystem _spriteAnimationSystem;
@@ -45,9 +46,6 @@ namespace InfiniteJumper
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
-            //<canvas style="width: 1746px; height: 981.634px;" width="1334" height="750"></canvas>
-            _graphics.PreferredBackBufferHeight = 750;//TODO: this is magic value
-            _graphics.PreferredBackBufferWidth = 1334;//TODO: this is magic value
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -61,7 +59,14 @@ namespace InfiniteJumper
                 string readText = File.ReadAllText(path);
                 _settings = JsonConvert.DeserializeObject<Settings>(readText);
             }
-            float meterInPixels = 16;
+            else
+            {
+                throw new Exception("Settings file not found.");
+            }
+            _graphics.PreferredBackBufferHeight = _settings.PreferredBackBuffer.Height;
+            _graphics.PreferredBackBufferWidth = _settings.PreferredBackBuffer.Width;
+            _graphics.ApplyChanges();
+            float meterInPixels = _settings.MeterInPixels;
             ConvertUnits.SetDisplayUnitToSimUnitRatio(meterInPixels);
 
             base.Initialize();
@@ -102,9 +107,10 @@ namespace InfiniteJumper
             _spriteAnimationSystem =
             _ecsContainer.GetSystem(new SpriteAnimationSystem(_spriteBatch, _drawGameTimeProvider));
             _dieSound = Content.Load<SoundEffect>("die");
+            _jumpSound = Content.Load<SoundEffect>("jump");
             _ecsContainer.AddSystem(new JumpSystem(_gameStateManager, _updateGameTimeProvider, _dieSound, _settings.LostTreshold));
             _physics = new CustomPhysicsSystem(
-                new Vector2(0, 333),//TODO: this is magic value
+                _settings.Gravity.ToVector2(),
                 _updateGameTimeProvider,
                 _gameStateManager);
             _ecsContainer.AddSystem(_physics);
@@ -209,9 +215,9 @@ namespace InfiniteJumper
                 CurrentFrameNumber = 0,
                 FPS = 1,
                 Frames = new List<SpriteComponent>()
-                    {
-                        new SpriteComponent(_platform, new Rectangle(0,0,1024,32))//TODO: this is magic value
-                    }
+                {
+                    new SpriteComponent(_platform, _settings.InitialPlatform.Box)
+                }
             };
             var initialPlatform = _ecsContainer.CreateNewEntity();
             initialPlatform.AddComponent(initialPlatformAnimation);
@@ -247,7 +253,9 @@ namespace InfiniteJumper
                 platform.AddComponent(white);
                 platform.AddComponent(new TransformComponent()
                 {
-                    Position = new Vector2(900 + i * 251, 512),//TODO: this is magic value
+                    Position = new Vector2(
+                        _settings.PlatformPosition.X.Offset + i * _settings.PlatformPosition.X.Multiplier,
+                        _settings.PlatformPosition.Y),
                     Rotation = 0,
                     Scale = Vector2.One
                 });
