@@ -108,7 +108,13 @@ namespace InfiniteJumper
             _ecsContainer.GetSystem(new SpriteAnimationSystem(_spriteBatch, _drawGameTimeProvider));
             _dieSound = Content.Load<SoundEffect>("die");
             _jumpSound = Content.Load<SoundEffect>("jump");
-            _ecsContainer.AddSystem(new JumpSystem(_gameStateManager, _updateGameTimeProvider, _dieSound, _settings.LostTreshold));
+            _ecsContainer.AddSystem(
+                new JumpSystem(
+                    _gameStateManager,
+                    _updateGameTimeProvider,
+                    _dieSound,
+                    _jumpSound,
+                    _settings.LostTreshold));
             _physics = new CustomPhysicsSystem(
                 _settings.Gravity.ToVector2(),
                 _updateGameTimeProvider,

@@ -15,17 +15,20 @@ namespace InfiniteJumper.Systems
         public IGameStateManager GameStateManager { get; }
         public IGameTimeProvider GameTimeProvider { get; }
         public SoundEffect DieSound { get; }
+        public SoundEffect JumpSound { get; }
         public int LostTreshold { get; }
 
         public JumpSystem(
             IGameStateManager gameStateManager,
             IGameTimeProvider gameTimeProvider,
             SoundEffect dieSound,
+            SoundEffect jumpSound,
             int lostTreshold)
         {
             GameStateManager = gameStateManager;
             GameTimeProvider = gameTimeProvider;
             DieSound = dieSound;
+            JumpSound = jumpSound;
             LostTreshold = lostTreshold;
         }
 
@@ -48,6 +51,7 @@ namespace InfiniteJumper.Systems
                 && a.ColidesWithSolid)
             {
                 b.SetSpeedY(a.JumpSpeed);
+                JumpSound.Play();
                 //c.Elapsed = 0;
             }
             else if (GameStateManager.IsPlaying
@@ -63,6 +67,7 @@ namespace InfiniteJumper.Systems
                     b.SetSpeedY(a.JumpSpeed);
                     c.Elapsed = 0;
                     a.HasDoubleJumped = true;
+                    JumpSound.Play();
                 }
             }
             _kbState = kbCurrent;
