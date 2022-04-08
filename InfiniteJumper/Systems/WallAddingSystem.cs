@@ -11,12 +11,14 @@ namespace InfiniteJumper.Systems
 {
     internal class WallAddingSystem : UnifiedSystem<TransformComponent, CustomPhysicsComponent, WallComponent>
     {
-        public WallAddingSystem(Camera2D camera2D)
+        public WallAddingSystem(Camera2D camera2D, LastPlatformProvider lastPlatformProvider)
         {
             Camera2D = camera2D;
+            LastPlatformProvider = lastPlatformProvider;
         }
 
         public Camera2D Camera2D { get; }
+        public LastPlatformProvider LastPlatformProvider { get; }
 
         public override void ProcessSingleEntity(
             int entityId,
@@ -29,6 +31,7 @@ namespace InfiniteJumper.Systems
                 a.Position = new Microsoft.Xna.Framework.Vector2(a.Position.X + 1500, 512);//TODO Add Magic Values To Settings
 
                 b.Box.Location = a.Position.ToPoint();
+                LastPlatformProvider.Box = b.Box;
             }
         }
     }

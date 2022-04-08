@@ -120,9 +120,11 @@ namespace InfiniteJumper
                 _updateGameTimeProvider,
                 _gameStateManager);
             _ecsContainer.AddSystem(_physics);
+            var lpp = new LastPlatformProvider();
             var collisionSystem = new CollisionSystem()
             {
-                GameTimeProvider = _updateGameTimeProvider
+                GameTimeProvider = _updateGameTimeProvider,
+                LastPlatformProvider = lpp
             };
             _ecsContainer.AddSystem(collisionSystem);
             _ecsContainer.AddSystem(new RotationAnimationSystem()
@@ -147,8 +149,7 @@ namespace InfiniteJumper
                 Focus = _player
             };
             _camera.Initialize();
-
-            _ecsContainer.AddSystem(new WallAddingSystem(_camera));
+            _ecsContainer.AddSystem(new WallAddingSystem(_camera, lpp));
 
             var playerPhysics = new CustomPhysicsComponent()
             {

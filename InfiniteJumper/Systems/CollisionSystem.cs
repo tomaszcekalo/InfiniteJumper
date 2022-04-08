@@ -15,6 +15,7 @@ namespace InfiniteJumper.Systems
         public List<IUnifiedEntity> Collidables = new List<IUnifiedEntity>();
 
         public GameTimeProvider GameTimeProvider { get; set; }
+        public LastPlatformProvider LastPlatformProvider { get; set; }
 
         public override void ProcessSingleEntity(
             int entityId,
