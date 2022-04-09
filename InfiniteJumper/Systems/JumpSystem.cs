@@ -43,7 +43,7 @@ namespace InfiniteJumper.Systems
             {
                 GameStateManager.IsLosing = true;
                 GameStateManager.LostTimeStamp = GameTimeProvider.GameTime.TotalGameTime;
-                DieSound.Play();
+                DieSound.Play(1f, 0, 0);//magic values, add to settings
             }
             else if (GameStateManager.IsPlaying
                 && kbCurrent.IsKeyDown(Keys.Space)
@@ -51,7 +51,7 @@ namespace InfiniteJumper.Systems
                 && a.ColidesWithSolid)
             {
                 b.SetSpeedY(a.JumpSpeed);
-                JumpSound.Play();
+                JumpSound.Play(0.5f, 0, 0);//magic values, add to settings
                 //c.Elapsed = 0;
             }
             else if (GameStateManager.IsPlaying
@@ -67,7 +67,7 @@ namespace InfiniteJumper.Systems
                     b.SetSpeedY(a.JumpSpeed);
                     c.Elapsed = 0;
                     a.HasDoubleJumped = true;
-                    JumpSound.Play();
+                    JumpSound.Play(0.5f, 0, 0);//magic values, add to settings
                 }
             }
             _kbState = kbCurrent;
