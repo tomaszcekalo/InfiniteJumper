@@ -149,7 +149,8 @@ namespace InfiniteJumper
                 Focus = _player
             };
             _camera.Initialize();
-            _ecsContainer.AddSystem(new WallAddingSystem(_camera, lpp));
+            var was = new WallAddingSystem(_camera, lpp);
+            _ecsContainer.AddSystem(was);
 
             var playerPhysics = new CustomPhysicsComponent()
             {
@@ -213,7 +214,9 @@ namespace InfiniteJumper
                 CanColide = true,
                 Box = new Rectangle(0, 0, 20, 20)//TODO: this is magic value
             });
+
             collisionSystem.Collidables.Add(_coin);
+            was.Coin = _coin;
 
             //starting platform
             var white = new ColorComponent() { Color = Color.White };
