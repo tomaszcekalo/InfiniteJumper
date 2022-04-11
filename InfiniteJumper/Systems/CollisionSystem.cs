@@ -64,7 +64,7 @@ namespace InfiniteJumper.Systems
                     else
                     {
                         ref var tc = ref collidable.GetComponent<TransformComponent>();
-                        tc.Position = new Microsoft.Xna.Framework.Vector2(LastPlatformProvider.Box.Center.X, 452);
+                        tc.Position = new Microsoft.Xna.Framework.Vector2(LastPlatformProvider.Box.Center.X, 452);//TODO
                     }
                 }
             }

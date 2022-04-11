@@ -37,7 +37,7 @@ namespace InfiniteJumper.Systems
                 ref var coinTransform = ref Coin.GetComponent<TransformComponent>();
                 if (coinTransform.Position.X < Camera2D.Position.X)
                 {
-                    coinTransform.Position = new Microsoft.Xna.Framework.Vector2(a.Position.X, 452);
+                    coinTransform.Position = new Microsoft.Xna.Framework.Vector2(a.Position.X, 452);//TODO
                 }
             }
         }
