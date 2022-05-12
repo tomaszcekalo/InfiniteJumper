@@ -21,7 +21,17 @@
       "X": 155,
       "Y": 0
     },
-    "Jumpspeed": -222
+    "Jumpspeed": -222,
+    "JumpSound": {
+      "Volume": 0.5,
+      "Pitch": 0,
+      "Pan": 0
+    },
+    "DieSound": {
+      "Volume": 1,
+      "Pitch": 0,
+      "Pan": 0
+    }
   },
   "InitialPlatform": {
     "Position": {

@@ -16,6 +16,8 @@ namespace InfiniteJumper.Systems
         public IGameTimeProvider GameTimeProvider { get; }
         public SoundEffect DieSound { get; }
         public SoundEffect JumpSound { get; }
+        public SoundSettings DiesSoundSettings { get; }
+        public SoundSettings JumpSoundSettings { get; }
         public int LostTreshold { get; }
 
         public JumpSystem(
@@ -23,12 +25,16 @@ namespace InfiniteJumper.Systems
             IGameTimeProvider gameTimeProvider,
             SoundEffect dieSound,
             SoundEffect jumpSound,
+            SoundSettings diesSoundSettings,
+            SoundSettings jumpSoundSettings,
             int lostTreshold)
         {
             GameStateManager = gameStateManager;
             GameTimeProvider = gameTimeProvider;
             DieSound = dieSound;
             JumpSound = jumpSound;
+            DiesSoundSettings = diesSoundSettings;
+            JumpSoundSettings = jumpSoundSettings;
             LostTreshold = lostTreshold;
         }
 
@@ -43,7 +49,7 @@ namespace InfiniteJumper.Systems
             {
                 GameStateManager.IsLosing = true;
                 GameStateManager.LostTimeStamp = GameTimeProvider.GameTime.TotalGameTime;
-                DieSound.Play(1f, 0, 0);//magic values, add to settings
+                DieSound.Play(DiesSoundSettings.Volume, DiesSoundSettings.Pitch, DiesSoundSettings.Pan);
             }
             else if (GameStateManager.IsPlaying
                 && kbCurrent.IsKeyDown(Keys.Space)
@@ -51,7 +57,7 @@ namespace InfiniteJumper.Systems
                 && a.ColidesWithSolid)
             {
                 b.SetSpeedY(a.JumpSpeed);
-                JumpSound.Play(0.5f, 0, 0);//magic values, add to settings
+                JumpSound.Play(JumpSoundSettings.Volume, JumpSoundSettings.Pitch, JumpSoundSettings.Pan);
                 //c.Elapsed = 0;
             }
             else if (GameStateManager.IsPlaying
@@ -67,7 +73,7 @@ namespace InfiniteJumper.Systems
                     b.SetSpeedY(a.JumpSpeed);
                     c.Elapsed = 0;
                     a.HasDoubleJumped = true;
-                    JumpSound.Play(0.5f, 0, 0);//magic values, add to settings
+                    JumpSound.Play(JumpSoundSettings.Volume, JumpSoundSettings.Pitch, JumpSoundSettings.Pan);
                 }
             }
             _kbState = kbCurrent;

@@ -30,6 +30,8 @@ namespace InfiniteJumper
     {
         public Point Speed { get; set; }
         public int JumpSpeed { get; set; }
+        public SoundSettings JumpSound { get; set; }
+        public SoundSettings DieSound { get; set; }
     }
 
     internal class WidthHeight
@@ -48,5 +50,12 @@ namespace InfiniteJumper
             public int Multiplier { get; set; }
             public int Offset { get; set; }
         }
+    }
+
+    public class SoundSettings
+    {
+        public float Volume { get; set; }
+        public float Pitch { get; set; }
+        public float Pan { get; set; }
     }
 }

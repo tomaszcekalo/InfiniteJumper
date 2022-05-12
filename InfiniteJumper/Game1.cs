@@ -114,6 +114,8 @@ namespace InfiniteJumper
                     _updateGameTimeProvider,
                     _dieSound,
                     _jumpSound,
+                    _settings.Player.DieSound,
+                    _settings.Player.JumpSound,
                     _settings.LostTreshold));
             _physics = new CustomPhysicsSystem(
                 _settings.Gravity.ToVector2(),
@@ -307,7 +309,6 @@ namespace InfiniteJumper
         {
             _drawGameTimeProvider.GameTime = gameTime;
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            // TODO: Add your drawing code here
             if (_gameStateManager.IsPlaying)
             {
                 _spriteBatch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.LinearWrap);
@@ -337,7 +338,7 @@ namespace InfiniteJumper
                 if (_gameStateManager.IsLosing)
                 {
                     float secondsElapsed = (float)(gameTime.TotalGameTime.TotalSeconds - _gameStateManager.LostTimeStamp.TotalSeconds);
-                    var animationDurationInSeconds = 2f;
+                    var animationDurationInSeconds = 2f;//TODO: magic constant
                     var opacity = MathF.Max((animationDurationInSeconds - secondsElapsed) / animationDurationInSeconds, 0);
                     if (opacity == 0)
                     {
