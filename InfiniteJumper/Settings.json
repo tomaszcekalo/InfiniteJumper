@@ -23,7 +23,7 @@
     },
     "Jumpspeed": -222,
     "JumpSound": {
-      "Volume": 0.5,
+      "Volume": 0.1,
       "Pitch": 0,
       "Pan": 0
     },

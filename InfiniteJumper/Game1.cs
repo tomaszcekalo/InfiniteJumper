@@ -134,8 +134,10 @@ namespace InfiniteJumper
                 GameTimeProvider = _updateGameTimeProvider
             });
 
-            _music = Song.FromUri("music.mp3", new Uri("Content/music.mp3", UriKind.Relative));
-            _startMusic = Song.FromUri("startMusic.mp3", new Uri("Content/startMusic.mp3", UriKind.Relative));
+            //_music = Song.FromUri("music.mp3", new Uri("Content/music.mp3", UriKind.Relative));
+            //_startMusic = Song.FromUri("startMusic.mp3", new Uri("Content/startMusic.mp3", UriKind.Relative));
+            _music = Content.Load<Song>("music");
+            _startMusic = Content.Load<Song>("startMusic");
             _chmury = Content.Load<Texture2D>("chmury");
             _moneta = Content.Load<Texture2D>("moneta");
             _gory = Content.Load<Texture2D>("gory");
