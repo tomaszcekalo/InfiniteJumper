@@ -131,8 +131,7 @@ namespace InfiniteJumper
                 VelcroPhysics.Utilities.ConvertUnits.ToSimUnits
                 (
                     //_settings.Gravity.ToVector2()
-                    new Vector2(10, 10)
-                )
+                    new Vector2(0, 99))
                 );
             var physicsEntity = _ecsContainer.CreateNewEntity();
             physicsEntity.AddComponent(new VelcroWorldComponent()
@@ -240,17 +239,17 @@ namespace InfiniteJumper
                 Rotation = 0,
                 Scale = Vector2.One
             });
-            _coin.AddComponent(new VelcroPhysicsComponent()
-            {
-                Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
-                    physicsWorld,
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(20),
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(20),
-                    0.1f,
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(Vector2.Zero),
-                    0,
-                    VelcroPhysics.Dynamics.BodyType.Static)
-            });
+            //_coin.AddComponent(new VelcroPhysicsComponent()
+            //{
+            //    Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
+            //        physicsWorld,
+            //        VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(20),
+            //        VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(20),
+            //        0.1f,
+            //        VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(Vector2.Zero),
+            //        0,
+            //        VelcroPhysics.Dynamics.BodyType.Static)
+            //});
 
             ////collisionSystem.Collidables.Add(_coin);
             was.Coin = _coin;

@@ -55,9 +55,11 @@ namespace InfiniteJumper.Systems
             else if (GameStateManager.IsPlaying
                 && kbCurrent.IsKeyDown(Keys.Space)
                 //&& _kbState.IsKeyUp(Keys.Space)
-                && a.ColidesWithSolid)
+                //&& a.ColidesWithSolid
+                && b.Body.ContactList != null
+                )
             {
-                b.Body.LinearVelocity = new Microsoft.Xna.Framework.Vector2(b.Body.LinearVelocity.X, a.JumpSpeed);
+                b.Body.LinearVelocity = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(new Microsoft.Xna.Framework.Vector2(b.Body.LinearVelocity.X, a.JumpSpeed));
                 JumpSound.Play(JumpSoundSettings.Volume, JumpSoundSettings.Pitch, JumpSoundSettings.Pan);
                 //c.Elapsed = 0;
             }

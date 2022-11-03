@@ -39,6 +39,10 @@ namespace InfiniteJumper.Systems
                 effects: SpriteEffects.None,
                 layerDepth: a.LayerDepth
                 );
+            //działa:
+            //position: b.Position - b.Origin,
+            //origin: Vector2.Zero,//b.Origin,
+
             //var destinationRectangle = new Rectangle(b.Position.ToPoint(), a.CurrentFrame.SourceRectangle.Size);
             //SpriteBatch.Draw(
             //    texture: a.CurrentFrame.Texture,

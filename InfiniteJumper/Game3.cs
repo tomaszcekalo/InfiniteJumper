@@ -91,7 +91,7 @@ namespace InfiniteJumper
                     VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(24),
                     VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(48),
                     1,
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(Vector2.One),
+                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(new Vector2(24, 48)),
                     0,
                     VelcroPhysics.Dynamics.BodyType.Dynamic)
             };
@@ -155,7 +155,8 @@ namespace InfiniteJumper
             {
                 Position = _settings.InitialPlatform.Position.ToVector2(),
                 Rotation = 0,
-                Scale = Vector2.One
+                Scale = Vector2.One,
+                Origin = new Vector2(512, 16)
             });
             initialPlatform.AddComponent(new VelcroPhysicsComponent()
             {
@@ -213,7 +214,7 @@ namespace InfiniteJumper
             var was = new WallAddingSystem(_camera, lpp);
             _ecsContainer.AddSystem(was);
             var physicsEntity = _ecsContainer.CreateNewEntity();
-            _physicsWorld = new VelcroPhysics.Dynamics.World(_settings.Gravity.ToVector2());
+            _physicsWorld = new VelcroPhysics.Dynamics.World(new Vector2(0, 88));
             physicsEntity.AddComponent(new VelcroWorldComponent()
             {
                 World = _physicsWorld
