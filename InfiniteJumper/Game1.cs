@@ -240,7 +240,8 @@ namespace InfiniteJumper
             {
                 Position = _settings.InitialPlatform.Position.ToVector2(),
                 Rotation = 0,
-                Scale = Vector2.One
+                Scale = Vector2.One,
+                Origin = new Vector2(512, 16)
             });
             initialPlatform.AddComponent(new CustomPhysicsComponent()
             {
@@ -271,7 +272,8 @@ namespace InfiniteJumper
                         _settings.PlatformPosition.X.Offset + i * _settings.PlatformPosition.X.Multiplier,
                         _settings.PlatformPosition.Y),
                     Rotation = 0,
-                    Scale = Vector2.One
+                    Scale = Vector2.One,
+                    Origin = new Vector2(512, 16)
                 });
                 platform.AddComponent(new CustomPhysicsComponent()
                 {

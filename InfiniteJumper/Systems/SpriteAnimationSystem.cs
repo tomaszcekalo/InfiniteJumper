@@ -30,7 +30,7 @@ namespace InfiniteJumper.Systems
             a.Update(GameTimeProvider.GameTime.ElapsedGameTime.TotalSeconds);
             SpriteBatch.Draw(
                 texture: a.CurrentFrame.Texture,
-                position: b.Position + b.Origin,
+                position: b.Position,
                 sourceRectangle: a.CurrentFrame.SourceRectangle,
                 color: c.Color,
                 rotation: b.Rotation,
