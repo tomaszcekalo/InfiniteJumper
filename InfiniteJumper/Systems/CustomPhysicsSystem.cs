@@ -38,7 +38,7 @@ namespace InfiniteJumper.Systems
             b.Position.X += a.Speed.X * time;
             b.Position.Y += a.Speed.Y * time;
 
-            a.Box.Location = (b.Position - b.Origin).ToPoint();//adjust to origin
+            a.Box.Location = (b.Position - b.Origin).ToPoint();
 
             //handle
         }
