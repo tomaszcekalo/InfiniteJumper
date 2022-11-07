@@ -18,13 +18,13 @@
 //        public GameTimeProvider GameTimeProvider { get; set; }
 //        public LastPlatformProvider LastPlatformProvider { get; set; }
 
-//public override void ProcessSingleEntity(
-//    int entityId,
-//    ref PlayerComponent a,
-//    ref CustomPhysicsComponent b,
-//    ref TransformComponent c)
-//{
-//    a.ColidesWithSolid = false;
+//        public override void ProcessSingleEntity(
+//            int entityId,
+//            ref PlayerComponent a,
+//            ref CustomPhysicsComponent b,
+//            ref TransformComponent c)
+//        {
+//            a.ColidesWithSolid = false;
 
 //            foreach (var collidable in Collidables)
 //            {

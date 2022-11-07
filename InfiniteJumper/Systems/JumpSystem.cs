@@ -59,21 +59,23 @@ namespace InfiniteJumper.Systems
                 && b.Body.ContactList != null
                 )
             {
-                b.Body.LinearVelocity = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(new Microsoft.Xna.Framework.Vector2(b.Body.LinearVelocity.X, a.JumpSpeed));
+                b.Body.LinearVelocity = new Microsoft.Xna.Framework.Vector2(b.Body.LinearVelocity.X, VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(a.JumpSpeed));
                 JumpSound.Play(JumpSoundSettings.Volume, JumpSoundSettings.Pitch, JumpSoundSettings.Pan);
+                a.HasDoubleJumped = false;
+                a.ColidedAt = GameTimeProvider.GameTime.TotalGameTime.TotalSeconds;
                 //c.Elapsed = 0;
             }
             else if (GameStateManager.IsPlaying
                 && kbCurrent.IsKeyDown(Keys.Space)
                 && _kbState.IsKeyUp(Keys.Space)
                 && !a.HasDoubleJumped
-                && b.Body.LinearVelocity.Y > 24)
+                && b.Body.LinearVelocity.Y > 0)
             {
                 //cayote time
                 var diff = GameTimeProvider.GameTime.TotalGameTime.TotalSeconds - a.ColidedAt;
-                if (diff < 1)
+                //if (diff < 1)
                 {
-                    b.Body.LinearVelocity = new Microsoft.Xna.Framework.Vector2(b.Body.LinearVelocity.X, a.JumpSpeed);
+                    b.Body.LinearVelocity = new Microsoft.Xna.Framework.Vector2(b.Body.LinearVelocity.X, VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(a.JumpSpeed));
                     c.Elapsed = 0;
                     a.HasDoubleJumped = true;
                     JumpSound.Play(JumpSoundSettings.Volume, JumpSoundSettings.Pitch, JumpSoundSettings.Pan);

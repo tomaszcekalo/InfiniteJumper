@@ -38,7 +38,7 @@
 //            b.Position.X += a.Speed.X * time;
 //            b.Position.Y += a.Speed.Y * time;
 
-            a.Box.Location = (b.Position - b.Origin).ToPoint();
-        }
-    }
-}
+//            a.Box.Location = (b.Position - b.Origin).ToPoint();
+//        }
+//    }
+//}

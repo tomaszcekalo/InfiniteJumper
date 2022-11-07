@@ -131,7 +131,7 @@ namespace InfiniteJumper
                 VelcroPhysics.Utilities.ConvertUnits.ToSimUnits
                 (
                     //_settings.Gravity.ToVector2()
-                    new Vector2(0, 99))
+                    new Vector2(111, 222))
                 );
             var physicsEntity = _ecsContainer.CreateNewEntity();
             physicsEntity.AddComponent(new VelcroWorldComponent()

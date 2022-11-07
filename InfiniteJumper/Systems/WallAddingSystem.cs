@@ -28,11 +28,11 @@ namespace InfiniteJumper.Systems
             ref VelcroPhysicsComponent b,
             ref WallComponent c)
         {
-            if (b.Body.Position.X < Camera2D.Position.X)
+            if ((VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(b.Body.Position.X) + a.Origin.X) < Camera2D.Position.X)
             {
-                a.Position = new Microsoft.Xna.Framework.Vector2(a.Position.X + 1500, 512);//TODO Add Magic Values To Settings
+                var Position = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(new Microsoft.Xna.Framework.Vector2(1500, 512));//TODO Add Magic Values To Settings
 
-                b.Body.Position = a.Position;
+                b.Body.Position += Position;
                 //LastPlatformProvider.Box = b.Body.b;
 
                 ref var coinTransform = ref Coin.GetComponent<TransformComponent>();
