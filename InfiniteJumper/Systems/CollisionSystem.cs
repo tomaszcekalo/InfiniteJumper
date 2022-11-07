@@ -24,8 +24,6 @@ namespace InfiniteJumper.Systems
             ref TransformComponent c)
         {
             a.ColidesWithSolid = false;
-            //var box = b.Box;
-            //box.Inflate(2, 2);
 
             foreach (var collidable in Collidables)
             {
