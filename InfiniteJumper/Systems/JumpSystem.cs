@@ -54,7 +54,7 @@ namespace InfiniteJumper.Systems
             }
             else if (GameStateManager.IsPlaying
                 && kbCurrent.IsKeyDown(Keys.Space)
-                //&& _kbState.IsKeyUp(Keys.Space)
+                && _kbState.IsKeyUp(Keys.Space)
                 //&& a.ColidesWithSolid
                 && b.Body.ContactList != null
                 )

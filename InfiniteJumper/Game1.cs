@@ -47,6 +47,7 @@ namespace InfiniteJumper
 
         private Settings _settings;
         private VelcroPhysicsSystem _velcroPhysicsSystem;
+        private VelcroPhysicsComponent _playerPhysics;
 
         public Game1()
         {
@@ -131,7 +132,7 @@ namespace InfiniteJumper
                 VelcroPhysics.Utilities.ConvertUnits.ToSimUnits
                 (
                     //_settings.Gravity.ToVector2()
-                    new Vector2(111, 222))
+                    new Vector2(00, 222))
                 );
             var physicsEntity = _ecsContainer.CreateNewEntity();
             physicsEntity.AddComponent(new VelcroWorldComponent()
@@ -175,7 +176,7 @@ namespace InfiniteJumper
             var was = new WallAddingSystem(_camera, lpp);
             _ecsContainer.AddSystem(was);
 
-            var playerPhysics = new VelcroPhysicsComponent()
+            _playerPhysics = new VelcroPhysicsComponent()
             {
                 Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
                     physicsWorld,
@@ -186,8 +187,9 @@ namespace InfiniteJumper
                     0,
                     VelcroPhysics.Dynamics.BodyType.Dynamic)
             };
-            playerPhysics.Body.FixedRotation = true;
-            _player.AddComponent(playerPhysics);
+            _playerPhysics.Body.FixedRotation = true;
+            _playerPhysics.Body.LinearVelocity = new Vector2(0, 0);
+            _player.AddComponent(_playerPhysics);
             _player.AddComponent(new ColorComponent() { Color = Color.White });
             _player.AddComponent(new TransformComponent()
             {
@@ -288,7 +290,7 @@ namespace InfiniteJumper
             });
             //collisionSystem.Collidables.Add(initialPlatform);
 
-            for (int i = 1; i <= 6; i++)
+            for (int i = 0; i <= 6; i++)
             {
                 var platform = _ecsContainer.CreateNewEntity();
                 _platforms.Add(platform);
@@ -311,7 +313,7 @@ namespace InfiniteJumper
                     Position = position,
                     Rotation = 0,
                     Scale = Vector2.One,
-                    Origin = new Vector2(512, 16)
+                    Origin = new Vector2(32 * 6 / 2, 16)
                 });
                 platform.AddComponent(new VelcroPhysicsComponent()
                 {
@@ -348,6 +350,7 @@ namespace InfiniteJumper
                 _gameStateManager.IsPlaying = true;
                 MediaPlayer.Play(_music);
             }
+            _playerPhysics.Body.LinearVelocity = new Vector2(11, _playerPhysics.Body.LinearVelocity.Y);
             _ecsContainer.Run();
 
             base.Update(gameTime);
