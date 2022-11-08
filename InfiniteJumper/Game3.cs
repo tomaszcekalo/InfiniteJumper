@@ -9,20 +9,20 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Undine.Core;
 using Undine.DefaultEcs;
 using Undine.MonoGame;
 using Undine.VelcroPhysics.MonoGame;
+using VelcroPhysics.Dynamics;
 using VelcroPhysics.Utilities;
 
 namespace InfiniteJumper
 {
-    public class Game1 : Game
+    internal class Game3 : Game
     {
-        private GraphicsDeviceManager _graphics;
-        private GameTimeProvider _drawGameTimeProvider;
-        private GameTimeProvider _updateGameTimeProvider;
-        private SpriteBatch _spriteBatch;
         private Song _music;
         private Song _startMusic;
         private Texture2D _chmury;
@@ -33,32 +33,31 @@ namespace InfiniteJumper
         private Texture2D _playerTexture;
         private SpriteFont _font;
         private SoundEffect _coinSound;
+        private GraphicsDeviceManager _graphics;
+        private SoundEffect _musicSA;
+        private SoundEffect _startMusicSA;
+        private GameTimeProvider _drawGameTimeProvider;
+        private GameTimeProvider _updateGameTimeProvider;
+        private SpriteBatch _spriteBatch;
+        private GameStateManager _gameStateManager;
+        private ISystem _spriteAnimationSystem;
         private SoundEffect _dieSound;
         private SoundEffect _jumpSound;
-        private IUnifiedEntity _coin;
         private EcsContainer _ecsContainer;
-        private ISystem _spriteAnimationSystem;
+        private VelcroPhysicsSystem _velcroPhysicsSystem;
+        private Settings _settings;
+        private World _physicsWorld;
         private IUnifiedEntity _player;
         private Camera2D _camera;
-        private IGameStateManager _gameStateManager;
 
-        //private CustomPhysicsSystem _physics;
-        private List<IUnifiedEntity> _platforms = new List<IUnifiedEntity>();
+        public bool IsPlaying { get; set; }
+        public bool IsStarted { get; set; }
 
-        private Settings _settings;
-        private VelcroPhysicsSystem _velcroPhysicsSystem;
-        private VelcroPhysicsComponent _playerPhysics;
-
-        public Game1()
+        public Game3()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-        }
-
-        protected override void Initialize()
-        {
-            // TODO: Add your initialization logic here
             string path = "Settings.json";
             if (File.Exists(path))
             {
@@ -74,122 +73,29 @@ namespace InfiniteJumper
             _graphics.ApplyChanges();
             float meterInPixels = _settings.MeterInPixels;
             ConvertUnits.SetDisplayUnitToSimUnitRatio(meterInPixels);
+        }
 
+        protected override void Initialize()
+        {
             base.Initialize();
+            InitSystems();
+            InitEntitiesAndComponents();
         }
 
-        protected void ResetGame()
+        private void InitEntitiesAndComponents()
         {
-            _gameStateManager.IsPlaying = false;
-            _gameStateManager.IsLosing = false;
-            MediaPlayer.Play(_startMusic);
-            ref var t = ref _player.GetComponent<TransformComponent>();
-            t.Position = new Vector2(0, 0);
-            ref var p = ref _player.GetComponent<VelcroPhysicsComponent>();
-            p.Body.Position = new Vector2(0, 0);
-            p.Body.LinearVelocity = new Vector2(155, 0);
-            _camera.Position = new Vector2(0, 0);
-
-            for (int i = 0; i < _platforms.Count; i++)
-            {
-                var platform = _platforms[i];
-                ref var position = ref platform.GetComponent<TransformComponent>();
-                position.Position = new Vector2(900 + i * 251, 512);//TODO: this is magic value
-            }
-        }
-
-        protected override void LoadContent()
-        {
-            _drawGameTimeProvider = new GameTimeProvider();
-            _updateGameTimeProvider = new GameTimeProvider();
-
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            _ecsContainer = new DefaultEcsContainer();
-            //_ecsContainer = new MinEcsContainer();
-            //_ecsContainer = new LeopotamEcsContainer();
-
-            _gameStateManager = new GameStateManager();
-            _spriteAnimationSystem =
-            _ecsContainer.GetSystem(new SpriteAnimationSystem(_spriteBatch, _drawGameTimeProvider));
-            _dieSound = Content.Load<SoundEffect>("die");
-            _jumpSound = Content.Load<SoundEffect>("jump");
-            _ecsContainer.AddSystem(
-                new JumpSystem(
-                    _gameStateManager,
-                    _updateGameTimeProvider,
-                    _dieSound,
-                    _jumpSound,
-                    _settings.Player.DieSound,
-                    _settings.Player.JumpSound,
-                    _settings.LostTreshold));
-            //_physics = new CustomPhysicsSystem(
-            //    _settings.Gravity.ToVector2(),
-            //    _updateGameTimeProvider,
-            //    _gameStateManager);
-            //_ecsContainer.AddSystem(_physics);
-            var physicsWorld = new VelcroPhysics.Dynamics.World(
-                VelcroPhysics.Utilities.ConvertUnits.ToSimUnits
-                (
-                    //_settings.Gravity.ToVector2()
-                    new Vector2(00, 222))
-                );
-            var physicsEntity = _ecsContainer.CreateNewEntity();
-            physicsEntity.AddComponent(new VelcroWorldComponent()
-            {
-                World = physicsWorld
-            });
-            _velcroPhysicsSystem = new VelcroPhysicsSystem();
-            _ecsContainer.AddSystem(_velcroPhysicsSystem);
-            _ecsContainer.AddSystem(new VelcroPhysicsTransformSystem());
-            var lpp = new LastPlatformProvider();
-            //var collisionSystem = new CollisionSystem()
-            //{
-            //    GameTimeProvider = _updateGameTimeProvider,
-            //    LastPlatformProvider = lpp
-            //};
-            //_ecsContainer.AddSystem(collisionSystem);
-            _ecsContainer.AddSystem(new RotationAnimationSystem()
-            {
-                GameTimeProvider = _updateGameTimeProvider
-            });
-
-            //_music = Song.FromUri("music.mp3", new Uri("Content/music.mp3", UriKind.Relative));
-            //_startMusic = Song.FromUri("startMusic.mp3", new Uri("Content/startMusic.mp3", UriKind.Relative));
-            _music = Content.Load<Song>("music");
-            _startMusic = Content.Load<Song>("startMusic");
-            _chmury = Content.Load<Texture2D>("chmury");
-            _moneta = Content.Load<Texture2D>("moneta");
-            _gory = Content.Load<Texture2D>("gory");
-            _niebo = Content.Load<Texture2D>("niebo");
-            _platform = Content.Load<Texture2D>("platform");
-            _playerTexture = Content.Load<Texture2D>("player");
-            _font = Content.Load<SpriteFont>("ClickToStartFont");
-            _coinSound = Content.Load<SoundEffect>("coin");
-
-            _player = _ecsContainer.CreateNewEntity();
-            _camera = new Camera2D(this)
-            {
-                Focus = _player
-            };
-            _camera.Initialize();
-            var was = new WallAddingSystem(_camera, lpp);
-            _ecsContainer.AddSystem(was);
-
-            _playerPhysics = new VelcroPhysicsComponent()
+            var playerPhysics = new VelcroPhysicsComponent()
             {
                 Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
-                    physicsWorld,
+                    _physicsWorld,
                     VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(24),
                     VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(48),
-                    1111f,
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(Vector2.One),
+                    1,
+                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(new Vector2(24, 48)),
                     0,
                     VelcroPhysics.Dynamics.BodyType.Dynamic)
             };
-            _playerPhysics.Body.FixedRotation = true;
-            _playerPhysics.Body.LinearVelocity = new Vector2(0, 0);
-            _player.AddComponent(_playerPhysics);
+            _player.AddComponent(playerPhysics);
             _player.AddComponent(new ColorComponent() { Color = Color.White });
             _player.AddComponent(new TransformComponent()
             {
@@ -231,32 +137,7 @@ namespace InfiniteJumper
                     new SpriteComponent(_moneta,new Rectangle(100,0,20,20)),//TODO: this is magic value
                 }
             };
-            _coin = _ecsContainer.CreateNewEntity();
-            _coin.AddComponent(coinAnimation);
-            _coin.AddComponent(new ColorComponent() { Color = Color.White });
-            var coinPosition = new Vector2(64, 64);
-            _coin.AddComponent(new TransformComponent()
-            {
-                Position = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(coinPosition),//TODO: this is magic value
-                Rotation = 0,
-                Scale = Vector2.One
-            });
-            //_coin.AddComponent(new VelcroPhysicsComponent()
-            //{
-            //    Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
-            //        physicsWorld,
-            //        VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(20),
-            //        VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(20),
-            //        0.1f,
-            //        VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(Vector2.Zero),
-            //        0,
-            //        VelcroPhysics.Dynamics.BodyType.Static)
-            //});
 
-            ////collisionSystem.Collidables.Add(_coin);
-            was.Coin = _coin;
-
-            //starting platform
             var white = new ColorComponent() { Color = Color.White };
             var initialPlatformAnimation = new SpriteAnimationComponent()
             {
@@ -280,7 +161,7 @@ namespace InfiniteJumper
             initialPlatform.AddComponent(new VelcroPhysicsComponent()
             {
                 Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
-                    physicsWorld,
+                    _physicsWorld,
                     VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(_settings.InitialPlatform.Box.Width),
                     VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(_settings.InitialPlatform.Box.Height),
                     0.1f,
@@ -288,53 +169,78 @@ namespace InfiniteJumper
                     0,
                     VelcroPhysics.Dynamics.BodyType.Static)
             });
-            //collisionSystem.Collidables.Add(initialPlatform);
+        }
 
-            for (int i = 0; i <= 6; i++)
+        private void InitSystems()
+        {
+            _drawGameTimeProvider = new GameTimeProvider();
+            _updateGameTimeProvider = new GameTimeProvider();
+
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            _ecsContainer = new DefaultEcsContainer();
+            _gameStateManager = new GameStateManager();
+            _spriteAnimationSystem =
+            _ecsContainer.GetSystem(new SpriteAnimationSystem(_spriteBatch, _drawGameTimeProvider));
+
+            //_ecsContainer.AddSystem(
+            //    new JumpSystem(
+            //        _gameStateManager,
+            //        _updateGameTimeProvider,
+            //        _dieSound,
+            //        _jumpSound,
+            //        _settings.Player.DieSound,
+            //        _settings.Player.JumpSound,
+            //        _settings.LostTreshold)); var physicsWorld = new VelcroPhysics.Dynamics.World(
+            //     VelcroPhysics.Utilities.ConvertUnits.ToSimUnits
+            //     (
+            //         _settings.Gravity.ToVector2()
+            //     )
+            //     );
+            _velcroPhysicsSystem = new VelcroPhysicsSystem();
+            _ecsContainer.AddSystem(_velcroPhysicsSystem);
+            _ecsContainer.AddSystem(new VelcroPhysicsTransformSystem());
+            var lpp = new LastPlatformProvider();
+            _ecsContainer.AddSystem(new RotationAnimationSystem()
             {
-                var platform = _ecsContainer.CreateNewEntity();
-                _platforms.Add(platform);
-                var platformAnimation = new SpriteAnimationComponent()
-                {
-                    CurrentFrameNumber = 0,
-                    FPS = 1,
-                    Frames = new List<SpriteComponent>()
-                    {
-                        new SpriteComponent(_platform, new Rectangle(0,0,32*6,32))//TODO: this is magic value
-                    }
-                };
-                platform.AddComponent(platformAnimation);
-                platform.AddComponent(white);
-                var position = new Vector2(
-                        _settings.PlatformPosition.X.Offset + i * _settings.PlatformPosition.X.Multiplier,
-                        _settings.PlatformPosition.Y);
-                platform.AddComponent(new TransformComponent()
-                {
-                    Position = position,
-                    Rotation = 0,
-                    Scale = Vector2.One,
-                    Origin = new Vector2(32 * 6 / 2, 16)
-                });
-                platform.AddComponent(new VelcroPhysicsComponent()
-                {
-                    Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
-                    physicsWorld,
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(32 * 6),
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(32),
-                    0.1f,
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(position),
-                    0,
-                    VelcroPhysics.Dynamics.BodyType.Static)
-                });
-                platform.AddComponent(new WallComponent());
-                //collisionSystem.Collidables.Add(platform);
-            }
-            //add wall adding system
+                GameTimeProvider = _updateGameTimeProvider
+            });
+            _player = _ecsContainer.CreateNewEntity();
+            _camera = new Camera2D(this)
+            {
+                Focus = _player
+            };
+            _camera.Initialize();
+            var was = new WallAddingSystem(_camera, lpp);
+            _ecsContainer.AddSystem(was);
+            var physicsEntity = _ecsContainer.CreateNewEntity();
+            _physicsWorld = new VelcroPhysics.Dynamics.World(new Vector2(0, 88));
+            physicsEntity.AddComponent(new VelcroWorldComponent()
+            {
+                World = _physicsWorld
+            });
+        }
 
-            MediaPlayer.IsRepeating = true;
+        protected void ResetGame()
+        {
             MediaPlayer.Play(_startMusic);
+        }
 
-            // TODO: use this.Content to load your game content here
+        protected override void LoadContent()
+        {
+            _music = Content.Load<Song>("music");
+            _startMusic = Content.Load<Song>("startMusic");
+            _chmury = Content.Load<Texture2D>("chmury");
+            _moneta = Content.Load<Texture2D>("moneta");
+            _gory = Content.Load<Texture2D>("gory");
+            _niebo = Content.Load<Texture2D>("niebo");
+            _platform = Content.Load<Texture2D>("platform");
+            _playerTexture = Content.Load<Texture2D>("player");
+            _font = Content.Load<SpriteFont>("ClickToStartFont");
+            _coinSound = Content.Load<SoundEffect>("coin");
+            _dieSound = Content.Load<SoundEffect>("die");
+            _jumpSound = Content.Load<SoundEffect>("jump");
+            base.LoadContent();
         }
 
         protected override void Update(GameTime gameTime)
@@ -344,15 +250,7 @@ namespace InfiniteJumper
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-            if (!_gameStateManager.IsPlaying && Keyboard.GetState().IsKeyDown(Keys.Space))
-            {
-                _gameStateManager.IsPlaying = true;
-                MediaPlayer.Play(_music);
-            }
-            _playerPhysics.Body.LinearVelocity = new Vector2(11, _playerPhysics.Body.LinearVelocity.Y);
             _ecsContainer.Run();
-
             base.Update(gameTime);
         }
 
@@ -360,7 +258,7 @@ namespace InfiniteJumper
         {
             _drawGameTimeProvider.GameTime = gameTime;
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            if (_gameStateManager.IsPlaying)
+            if (/*_gameStateManager.IsPlaying*/true)
             {
                 _spriteBatch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.LinearWrap);
                 _camera.Update(gameTime);
@@ -403,6 +301,14 @@ namespace InfiniteJumper
                         new Color(Color.Red, opacity),
                         0);
                 }
+                var textSize = _font.MeasureString("Click to start");
+                _spriteBatch.DrawString(
+                   _font,
+                   _player.GetComponent<VelcroPhysicsComponent>().Body.LinearVelocity.Y.ToString(),
+                   new Vector2(
+                       _graphics.PreferredBackBufferWidth / 2 - textSize.X / 2,
+                       _graphics.PreferredBackBufferHeight / 2),
+                   Color.White);
                 _spriteBatch.End();
             }
             else

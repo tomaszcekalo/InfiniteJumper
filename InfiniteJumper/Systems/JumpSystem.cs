@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Text;
 using Undine.Core;
 using Undine.MonoGame;
+using Undine.VelcroPhysics.MonoGame;
 
 namespace InfiniteJumper.Systems
 {
-    internal class JumpSystem : UnifiedSystem<PlayerComponent, CustomPhysicsComponent, RotationAnimationComponent>
+    internal class JumpSystem : UnifiedSystem<PlayerComponent, VelcroPhysicsComponent, RotationAnimationComponent>
     {
         private KeyboardState _kbState;
         public IGameStateManager GameStateManager { get; }
@@ -41,11 +42,11 @@ namespace InfiniteJumper.Systems
         public override void ProcessSingleEntity(
             int entityId,
             ref PlayerComponent a,
-            ref CustomPhysicsComponent b,
+            ref VelcroPhysicsComponent b,
             ref RotationAnimationComponent c)
         {
             var kbCurrent = Keyboard.GetState();
-            if (b.Box.Top > LostTreshold && !GameStateManager.IsLosing)
+            if (b.Body.Position.Y > LostTreshold && !GameStateManager.IsLosing)
             {
                 GameStateManager.IsLosing = true;
                 GameStateManager.LostTimeStamp = GameTimeProvider.GameTime.TotalGameTime;
@@ -53,24 +54,28 @@ namespace InfiniteJumper.Systems
             }
             else if (GameStateManager.IsPlaying
                 && kbCurrent.IsKeyDown(Keys.Space)
-                //&& _kbState.IsKeyUp(Keys.Space)
-                && a.ColidesWithSolid)
+                && _kbState.IsKeyUp(Keys.Space)
+                //&& a.ColidesWithSolid
+                && b.Body.ContactList != null
+                )
             {
-                b.SetSpeedY(a.JumpSpeed);
+                b.Body.LinearVelocity = new Microsoft.Xna.Framework.Vector2(b.Body.LinearVelocity.X, VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(a.JumpSpeed));
                 JumpSound.Play(JumpSoundSettings.Volume, JumpSoundSettings.Pitch, JumpSoundSettings.Pan);
+                a.HasDoubleJumped = false;
+                a.ColidedAt = GameTimeProvider.GameTime.TotalGameTime.TotalSeconds;
                 //c.Elapsed = 0;
             }
             else if (GameStateManager.IsPlaying
                 && kbCurrent.IsKeyDown(Keys.Space)
                 && _kbState.IsKeyUp(Keys.Space)
                 && !a.HasDoubleJumped
-                && b.Speed.Y > 24)
+                && b.Body.LinearVelocity.Y > 0)
             {
                 //cayote time
                 var diff = GameTimeProvider.GameTime.TotalGameTime.TotalSeconds - a.ColidedAt;
-                if (diff < 1)
+                //if (diff < 1)
                 {
-                    b.SetSpeedY(a.JumpSpeed);
+                    b.Body.LinearVelocity = new Microsoft.Xna.Framework.Vector2(b.Body.LinearVelocity.X, VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(a.JumpSpeed));
                     c.Elapsed = 0;
                     a.HasDoubleJumped = true;
                     JumpSound.Play(JumpSoundSettings.Volume, JumpSoundSettings.Pitch, JumpSoundSettings.Pan);

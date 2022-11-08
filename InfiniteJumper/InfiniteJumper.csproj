@@ -25,6 +25,7 @@
     <PackageReference Include="Undine.Core" Version="0.0.0.2" />
     <PackageReference Include="Undine.DefaultEcs" Version="1.0.1" />
     <PackageReference Include="Undine.MonoGame" Version="0.0.4" />
+    <PackageReference Include="Undine.VelcroPhysics.MonoGame" Version="0.0.4" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Content\music.mp3">
