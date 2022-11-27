@@ -87,7 +87,6 @@ namespace InfiniteJumper
             t.Position = new Vector2(0, 0);
             ref var p = ref _player.GetComponent<VelcroPhysicsComponent>();
             p.Body.Position = new Vector2(0, 0);
-            p.Body.LinearVelocity = new Vector2(155, 0);
             _camera.Position = new Vector2(0, 0);
 
             for (int i = 0; i < _platforms.Count; i++)
@@ -131,9 +130,9 @@ namespace InfiniteJumper
             var physicsWorld = new VelcroPhysics.Dynamics.World(
                 VelcroPhysics.Utilities.ConvertUnits.ToSimUnits
                 (
-                    //_settings.Gravity.ToVector2()
-                    new Vector2(00, 222))
-                );
+                    _settings.Gravity.ToVector2()
+                //new Vector2(00, 222)
+                ));
             var physicsEntity = _ecsContainer.CreateNewEntity();
             physicsEntity.AddComponent(new VelcroWorldComponent()
             {
@@ -216,7 +215,7 @@ namespace InfiniteJumper
                 JumpSpeed = _settings.Player.JumpSpeed
             });
             _player.AddComponent(new RotationAnimationComponent() { Duration = 1 });
-
+            _playerPhysics.Body.Friction = 0;
             var coinAnimation = new SpriteAnimationComponent()
             {
                 CurrentFrameNumber = 0,
@@ -288,6 +287,7 @@ namespace InfiniteJumper
                     0,
                     VelcroPhysics.Dynamics.BodyType.Static)
             });
+
             //collisionSystem.Collidables.Add(initialPlatform);
 
             for (int i = 0; i <= 6; i++)

@@ -46,7 +46,7 @@ namespace InfiniteJumper.Systems
             ref RotationAnimationComponent c)
         {
             var kbCurrent = Keyboard.GetState();
-            if (b.Body.Position.Y > LostTreshold && !GameStateManager.IsLosing)
+            if (b.Body.Position.Y > VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(LostTreshold) && !GameStateManager.IsLosing)
             {
                 GameStateManager.IsLosing = true;
                 GameStateManager.LostTimeStamp = GameTimeProvider.GameTime.TotalGameTime;
