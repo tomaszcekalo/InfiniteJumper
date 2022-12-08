@@ -9,6 +9,6 @@ namespace InfiniteJumper
 {
     public class LastPlatformProvider
     {
-        public Rectangle Box;
+        public Vector2 Position;
     }
 }

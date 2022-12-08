@@ -33,12 +33,14 @@ namespace InfiniteJumper.Systems
                 var Position = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(new Microsoft.Xna.Framework.Vector2(1500, 0));//TODO Add Magic Values To Settings
 
                 b.Body.Position += Position;
-                //LastPlatformProvider.Box = b.Body.b;
+                LastPlatformProvider.Position = b.Body.Position;
 
                 ref var coinTransform = ref Coin.GetComponent<TransformComponent>();
                 if (coinTransform.Position.X < Camera2D.Position.X)
                 {
-                    coinTransform.Position = new Microsoft.Xna.Framework.Vector2(a.Position.X, 452);//TODO
+                    ref var coinBody = ref Coin.GetComponent<VelcroPhysicsComponent>();
+                    coinBody.Body.Position = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(new Microsoft.Xna.Framework.Vector2(a.Position.X, 452));
+                    //coinTransform.Position = new Microsoft.Xna.Framework.Vector2(a.Position.X, 452);//TODO
                 }
             }
         }

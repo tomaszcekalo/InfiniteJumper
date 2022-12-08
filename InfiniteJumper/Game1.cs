@@ -92,8 +92,12 @@ namespace InfiniteJumper
             for (int i = 0; i < _platforms.Count; i++)
             {
                 var platform = _platforms[i];
-                ref var position = ref platform.GetComponent<TransformComponent>();
-                position.Position = new Vector2(900 + i * 251, 512);//TODO: this is magic value
+                var position = new Vector2(
+                        _settings.PlatformPosition.X.Offset + i * _settings.PlatformPosition.X.Multiplier,
+                        _settings.PlatformPosition.Y);
+                var physicsComponent = platform.GetComponent<VelcroPhysicsComponent>();
+                physicsComponent.Body.Position =
+                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(position);
             }
         }
 
@@ -240,17 +244,17 @@ namespace InfiniteJumper
                 Rotation = 0,
                 Scale = Vector2.One
             });
-            //_coin.AddComponent(new VelcroPhysicsComponent()
-            //{
-            //    Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
-            //        physicsWorld,
-            //        VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(20),
-            //        VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(20),
-            //        0.1f,
-            //        VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(Vector2.Zero),
-            //        0,
-            //        VelcroPhysics.Dynamics.BodyType.Static)
-            //});
+            _coin.AddComponent(new VelcroPhysicsComponent()
+            {
+                Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
+                    physicsWorld,
+                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(20),
+                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(20),
+                    0.1f,
+                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(Vector2.Zero),
+                    0,
+                    VelcroPhysics.Dynamics.BodyType.Static)
+            });
 
             ////collisionSystem.Collidables.Add(_coin);
             was.Coin = _coin;
@@ -349,8 +353,8 @@ namespace InfiniteJumper
             {
                 _gameStateManager.IsPlaying = true;
                 MediaPlayer.Play(_music);
+                _playerPhysics.Body.LinearVelocity = new Vector2(11, _playerPhysics.Body.LinearVelocity.Y);
             }
-            _playerPhysics.Body.LinearVelocity = new Vector2(11, _playerPhysics.Body.LinearVelocity.Y);
             _ecsContainer.Run();
 
             base.Update(gameTime);
@@ -408,10 +412,10 @@ namespace InfiniteJumper
             else
             {
                 _spriteBatch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.LinearWrap);
-                var textSize = _font.MeasureString("Click to start");
+                var textSize = _font.MeasureString("Press SPACE");
                 _spriteBatch.DrawString(
                     _font,
-                    "Click to start",
+                    "Press SPACE",
                     new Vector2(
                         _graphics.PreferredBackBufferWidth / 2 - textSize.X / 2,
                         _graphics.PreferredBackBufferHeight / 2),
