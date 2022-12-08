@@ -9,7 +9,7 @@ using Undine.VelcroPhysics.MonoGame;
 
 namespace InfiniteJumper.Systems
 {
-    internal class CoinSystem : UnifiedSystem<PlayerComponent, VelcroPhysicsComponent, RotationAnimationComponent>
-    {
-    }
+    //internal class CoinSystem : UnifiedSystem<PlayerComponent, VelcroPhysicsComponent, RotationAnimationComponent>
+    //{
+    //}
 }
