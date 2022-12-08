@@ -13,11 +13,6 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin arial.ttf
-/importer:
-/processor:
-/build:arial.ttf
-
 #begin chmury.png
 /importer:TextureImporter
 /processor:TextureProcessor
