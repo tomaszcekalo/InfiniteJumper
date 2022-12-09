@@ -31,7 +31,7 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: MSIX Package
+        name: release
         path: /home/runner/work/InfiniteJumper/InfiniteJumper/InfiniteJumper/bin/Release/net7.0/win-x64/publish/
     - name: Create a Release
 #      uses: elgohr/Github-Release-Action@v4
