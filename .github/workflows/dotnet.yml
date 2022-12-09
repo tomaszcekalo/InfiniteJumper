@@ -22,8 +22,6 @@ jobs:
         dotnet-version: 7.0.x
     - name: Restore dependencies
       run: dotnet restore
-    - name: fonts
-      run: sudo apt install ttf-mscorefonts-installer
     - name: Build
       run: dotnet build --no-restore
     - name: Test
@@ -33,13 +31,16 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: MSIX Package
+        name: release
         path: /home/runner/work/InfiniteJumper/InfiniteJumper/InfiniteJumper/bin/Release/net7.0/win-x64/publish/
-    - name: Create a Release
-      uses: elgohr/Github-Release-Action@v4
-      env:
-        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-      with:
-        title: MyReleaseMessage
-
-    
+#    - name: Create a Release
+#      uses: elgohr/Github-Release-Action@v4
+#      uses: actions/create-release@v1
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+#      with:
+#        title: MyReleaseMessage
+#        tag_name: ${{ github.run_number }}
+      
+      
+        
