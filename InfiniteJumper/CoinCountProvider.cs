@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InfiniteJumper.Components
+namespace InfiniteJumper
 {
-    internal struct CoinComponent
+    internal class CoinCountProvider
     {
+        public int CointCount { get; set; }
     }
 }

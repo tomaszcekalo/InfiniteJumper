@@ -145,7 +145,7 @@ namespace InfiniteJumper
             _velcroPhysicsSystem = new VelcroPhysicsSystem();
             _ecsContainer.AddSystem(_velcroPhysicsSystem);
             _ecsContainer.AddSystem(new VelcroPhysicsTransformSystem());
-            var lpp = new LastPlatformProvider();
+            var lastPlatformProvider = new LastPlatformProvider();
             //var collisionSystem = new CollisionSystem()
             //{
             //    GameTimeProvider = _updateGameTimeProvider,
@@ -156,6 +156,8 @@ namespace InfiniteJumper
             {
                 GameTimeProvider = _updateGameTimeProvider
             });
+            var coinCountProvider = new CoinCountProvider();
+            _ecsContainer.AddSystem(new CoinSystem(lastPlatformProvider, coinCountProvider));
 
             //_music = Song.FromUri("music.mp3", new Uri("Content/music.mp3", UriKind.Relative));
             //_startMusic = Song.FromUri("startMusic.mp3", new Uri("Content/startMusic.mp3", UriKind.Relative));
@@ -176,7 +178,7 @@ namespace InfiniteJumper
                 Focus = _player
             };
             _camera.Initialize();
-            var was = new WallAddingSystem(_camera, lpp);
+            var was = new WallAddingSystem(_camera, lastPlatformProvider);
             _ecsContainer.AddSystem(was);
 
             _playerPhysics = new VelcroPhysicsComponent()
@@ -235,6 +237,7 @@ namespace InfiniteJumper
                 }
             };
             _coin = _ecsContainer.CreateNewEntity();
+            _coin.AddComponent(new CoinComponent());
             _coin.AddComponent(coinAnimation);
             _coin.AddComponent(new ColorComponent() { Color = Color.White });
             var coinPosition = new Vector2(64, 64);
@@ -242,7 +245,8 @@ namespace InfiniteJumper
             {
                 Position = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(coinPosition),//TODO: this is magic value
                 Rotation = 0,
-                Scale = Vector2.One
+                Scale = Vector2.One,
+                Origin = new Vector2(10, 10)
             });
             _coin.AddComponent(new VelcroPhysicsComponent()
             {
@@ -294,7 +298,7 @@ namespace InfiniteJumper
 
             //collisionSystem.Collidables.Add(initialPlatform);
 
-            for (int i = 0; i <= 6; i++)
+            for (int i = 0; i <= 8; i++)
             {
                 var platform = _ecsContainer.CreateNewEntity();
                 _platforms.Add(platform);
@@ -353,6 +357,9 @@ namespace InfiniteJumper
             {
                 _gameStateManager.IsPlaying = true;
                 MediaPlayer.Play(_music);
+            }
+            if (_gameStateManager.IsPlaying)
+            {
                 _playerPhysics.Body.LinearVelocity = new Vector2(11, _playerPhysics.Body.LinearVelocity.Y);
             }
             _ecsContainer.Run();

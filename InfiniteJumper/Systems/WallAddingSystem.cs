@@ -39,7 +39,7 @@ namespace InfiniteJumper.Systems
                 if (coinTransform.Position.X < Camera2D.Position.X)
                 {
                     ref var coinBody = ref Coin.GetComponent<VelcroPhysicsComponent>();
-                    coinBody.Body.Position = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(new Microsoft.Xna.Framework.Vector2(a.Position.X, 452));
+                    coinBody.Body.Position = b.Body.Position - new Microsoft.Xna.Framework.Vector2(2, 2); ;
                     //coinTransform.Position = new Microsoft.Xna.Framework.Vector2(a.Position.X, 452);//TODO
                 }
             }
