@@ -178,7 +178,7 @@ namespace InfiniteJumper
                 Focus = _player
             };
             _camera.Initialize();
-            var was = new WallAddingSystem(_camera, lastPlatformProvider);
+            var was = new WallAddingSystem(_camera, lastPlatformProvider, _settings);
             _ecsContainer.AddSystem(was);
 
             _playerPhysics = new VelcroPhysicsComponent()
@@ -297,7 +297,7 @@ namespace InfiniteJumper
             });
 
             //collisionSystem.Collidables.Add(initialPlatform);
-
+            Vector2 position = new Vector2();
             for (int i = 0; i <= 8; i++)
             {
                 var platform = _ecsContainer.CreateNewEntity();
@@ -313,9 +313,9 @@ namespace InfiniteJumper
                 };
                 platform.AddComponent(platformAnimation);
                 platform.AddComponent(white);
-                var position = new Vector2(
-                        _settings.PlatformPosition.X.Offset + i * _settings.PlatformPosition.X.Multiplier,
-                        _settings.PlatformPosition.Y);
+                position = new Vector2(
+                       _settings.PlatformPosition.X.Offset + i * _settings.PlatformPosition.X.Multiplier,
+                       _settings.PlatformPosition.Y);
                 platform.AddComponent(new TransformComponent()
                 {
                     Position = position,
@@ -337,6 +337,7 @@ namespace InfiniteJumper
                 platform.AddComponent(new WallComponent());
                 //collisionSystem.Collidables.Add(platform);
             }
+            lastPlatformProvider.Position = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(position);
             //add wall adding system
 
             MediaPlayer.IsRepeating = true;
