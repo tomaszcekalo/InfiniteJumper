@@ -48,6 +48,7 @@ namespace InfiniteJumper
         private Settings _settings;
         private VelcroPhysicsSystem _velcroPhysicsSystem;
         private VelcroPhysicsComponent _playerPhysics;
+        private LastPlatformProvider _lastPlatformProvider;
 
         public Game1()
         {
@@ -88,17 +89,21 @@ namespace InfiniteJumper
             ref var p = ref _player.GetComponent<VelcroPhysicsComponent>();
             p.Body.Position = new Vector2(0, 0);
             _camera.Position = new Vector2(0, 0);
+            Vector2 position = new Vector2(0, 0);
 
             for (int i = 0; i < _platforms.Count; i++)
             {
                 var platform = _platforms[i];
-                var position = new Vector2(
+                position = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(
+                    new Vector2(
                         _settings.PlatformPosition.X.Offset + i * _settings.PlatformPosition.X.Multiplier,
-                        _settings.PlatformPosition.Y);
+                        _settings.PlatformPosition.Y)
+                    );
                 var physicsComponent = platform.GetComponent<VelcroPhysicsComponent>();
-                physicsComponent.Body.Position =
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(position);
+                physicsComponent.Body.Position = position;
             }
+            _coin.GetComponent<VelcroPhysicsComponent>().Body.Position = new Vector2(-10, -10);
+            _lastPlatformProvider.Position = position;
         }
 
         protected override void LoadContent()
@@ -145,7 +150,7 @@ namespace InfiniteJumper
             _velcroPhysicsSystem = new VelcroPhysicsSystem();
             _ecsContainer.AddSystem(_velcroPhysicsSystem);
             _ecsContainer.AddSystem(new VelcroPhysicsTransformSystem());
-            var lastPlatformProvider = new LastPlatformProvider();
+            _lastPlatformProvider = new LastPlatformProvider();
             //var collisionSystem = new CollisionSystem()
             //{
             //    GameTimeProvider = _updateGameTimeProvider,
@@ -157,7 +162,7 @@ namespace InfiniteJumper
                 GameTimeProvider = _updateGameTimeProvider
             });
             var coinCountProvider = new CoinCountProvider();
-            _ecsContainer.AddSystem(new CoinSystem(lastPlatformProvider, coinCountProvider));
+            _ecsContainer.AddSystem(new CoinSystem(_lastPlatformProvider, coinCountProvider));
 
             //_music = Song.FromUri("music.mp3", new Uri("Content/music.mp3", UriKind.Relative));
             //_startMusic = Song.FromUri("startMusic.mp3", new Uri("Content/startMusic.mp3", UriKind.Relative));
@@ -178,7 +183,7 @@ namespace InfiniteJumper
                 Focus = _player
             };
             _camera.Initialize();
-            var was = new WallAddingSystem(_camera, lastPlatformProvider, _settings);
+            var was = new WallAddingSystem(_camera, _lastPlatformProvider, _settings);
             _ecsContainer.AddSystem(was);
 
             _playerPhysics = new VelcroPhysicsComponent()
@@ -337,7 +342,7 @@ namespace InfiniteJumper
                 platform.AddComponent(new WallComponent());
                 //collisionSystem.Collidables.Add(platform);
             }
-            lastPlatformProvider.Position = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(position);
+            _lastPlatformProvider.Position = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(position);
             //add wall adding system
 
             MediaPlayer.IsRepeating = true;

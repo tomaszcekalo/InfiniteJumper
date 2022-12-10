@@ -69,7 +69,8 @@ namespace InfiniteJumper.Systems
                 && kbCurrent.IsKeyDown(Keys.Space)
                 && _kbState.IsKeyUp(Keys.Space)
                 && !a.HasDoubleJumped
-                && b.Body.LinearVelocity.Y > 0)
+                //&& b.Body.LinearVelocity.Y > 0
+                )
             {
                 //cayote time
                 var diff = GameTimeProvider.GameTime.TotalGameTime.TotalSeconds - a.ColidedAt;
