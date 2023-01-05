@@ -12,15 +12,21 @@ namespace InfiniteJumper.Systems
 {
     internal class WallAddingSystem : UnifiedSystem<TransformComponent, VelcroPhysicsComponent, WallComponent>
     {
-        public WallAddingSystem(Camera2D camera2D, LastPlatformProvider lastPlatformProvider, Settings settings)
+        public WallAddingSystem(
+            Camera2D camera2D,
+            LastPlatformProvider lastPlatformProvider,
+            PlatformCountProvider platformCountProvider,
+            Settings settings)
         {
             Camera2D = camera2D;
             LastPlatformProvider = lastPlatformProvider;
+            PlatformCountProvider = platformCountProvider;
             Settings = settings;
         }
 
         public Camera2D Camera2D { get; }
         public LastPlatformProvider LastPlatformProvider { get; }
+        public PlatformCountProvider PlatformCountProvider { get; }
         public Settings Settings { get; }
         public IUnifiedEntity Coin { get; set; }
 
@@ -36,6 +42,7 @@ namespace InfiniteJumper.Systems
                 var modifier = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(new Microsoft.Xna.Framework.Vector2(Settings.PlatformPosition.X.Multiplier, 0));
                 b.Body.Position = LastPlatformProvider.Position + modifier;
                 LastPlatformProvider.Position = b.Body.Position;
+                PlatformCountProvider.PlatformCount++;
 
                 ref var coinTransform = ref Coin.GetComponent<TransformComponent>();
                 if (coinTransform.Position.X < Camera2D.Position.X)

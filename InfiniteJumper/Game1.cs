@@ -49,6 +49,8 @@ namespace InfiniteJumper
         private VelcroPhysicsSystem _velcroPhysicsSystem;
         private VelcroPhysicsComponent _playerPhysics;
         private LastPlatformProvider _lastPlatformProvider;
+        private PlatformCountProvider _platformCountProvider;
+        private CoinCountProvider _coinCountProvider;
 
         public Game1()
         {
@@ -137,7 +139,7 @@ namespace InfiniteJumper
             //    _gameStateManager);
             //_ecsContainer.AddSystem(_physics);
             var physicsWorld = new VelcroPhysics.Dynamics.World(
-                VelcroPhysics.Utilities.ConvertUnits.ToSimUnits
+                ConvertUnits.ToSimUnits
                 (
                     _settings.Gravity.ToVector2()
                 //new Vector2(00, 222)
@@ -161,8 +163,8 @@ namespace InfiniteJumper
             {
                 GameTimeProvider = _updateGameTimeProvider
             });
-            var coinCountProvider = new CoinCountProvider();
-            _ecsContainer.AddSystem(new CoinSystem(_lastPlatformProvider, coinCountProvider));
+            _coinCountProvider = new CoinCountProvider();
+            _ecsContainer.AddSystem(new CoinSystem(_lastPlatformProvider, _coinCountProvider));
 
             //_music = Song.FromUri("music.mp3", new Uri("Content/music.mp3", UriKind.Relative));
             //_startMusic = Song.FromUri("startMusic.mp3", new Uri("Content/startMusic.mp3", UriKind.Relative));
@@ -183,17 +185,18 @@ namespace InfiniteJumper
                 Focus = _player
             };
             _camera.Initialize();
-            var was = new WallAddingSystem(_camera, _lastPlatformProvider, _settings);
+            _platformCountProvider = new PlatformCountProvider();
+            var was = new WallAddingSystem(_camera, _lastPlatformProvider, _platformCountProvider, _settings);
             _ecsContainer.AddSystem(was);
 
             _playerPhysics = new VelcroPhysicsComponent()
             {
                 Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
                     physicsWorld,
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(24),
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(48),
+                    ConvertUnits.ToSimUnits(24),
+                    ConvertUnits.ToSimUnits(48),
                     1111f,
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(Vector2.One),
+                    ConvertUnits.ToSimUnits(Vector2.One),
                     0,
                     VelcroPhysics.Dynamics.BodyType.Dynamic)
             };
@@ -248,7 +251,7 @@ namespace InfiniteJumper
             var coinPosition = new Vector2(64, 64);
             _coin.AddComponent(new TransformComponent()
             {
-                Position = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(coinPosition),//TODO: this is magic value
+                Position = ConvertUnits.ToSimUnits(coinPosition),//TODO: this is magic value
                 Rotation = 0,
                 Scale = Vector2.One,
                 Origin = new Vector2(10, 10)
@@ -257,10 +260,10 @@ namespace InfiniteJumper
             {
                 Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
                     physicsWorld,
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(20),
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(20),
+                    ConvertUnits.ToSimUnits(20),
+                    ConvertUnits.ToSimUnits(20),
                     0.1f,
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(Vector2.Zero),
+                    ConvertUnits.ToSimUnits(Vector2.Zero),
                     0,
                     VelcroPhysics.Dynamics.BodyType.Static)
             });
@@ -293,10 +296,10 @@ namespace InfiniteJumper
             {
                 Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
                     physicsWorld,
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(_settings.InitialPlatform.Box.Width),
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(_settings.InitialPlatform.Box.Height),
+                    ConvertUnits.ToSimUnits(_settings.InitialPlatform.Box.Width),
+                    ConvertUnits.ToSimUnits(_settings.InitialPlatform.Box.Height),
                     0.1f,
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(_settings.InitialPlatform.Position.ToVector2()),
+                    ConvertUnits.ToSimUnits(_settings.InitialPlatform.Position.ToVector2()),
                     0,
                     VelcroPhysics.Dynamics.BodyType.Static)
             });
@@ -332,17 +335,17 @@ namespace InfiniteJumper
                 {
                     Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
                     physicsWorld,
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(32 * 6),
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(32),
+                    ConvertUnits.ToSimUnits(32 * 6),
+                    ConvertUnits.ToSimUnits(32),
                     0.1f,
-                    VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(position),
+                    ConvertUnits.ToSimUnits(position),
                     0,
                     VelcroPhysics.Dynamics.BodyType.Static)
                 });
                 platform.AddComponent(new WallComponent());
                 //collisionSystem.Collidables.Add(platform);
             }
-            _lastPlatformProvider.Position = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(position);
+            _lastPlatformProvider.Position = ConvertUnits.ToSimUnits(position);
             //add wall adding system
 
             MediaPlayer.IsRepeating = true;
@@ -403,6 +406,12 @@ namespace InfiniteJumper
                 _spriteBatch.End();
                 _spriteBatch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.LinearWrap, transformMatrix: _camera.GetViewMatrix(1));
                 _spriteAnimationSystem.ProcessAll();
+                _spriteBatch.DrawString(
+                    _font,
+                    "Platforms: " + _platformCountProvider.PlatformCount + Environment.NewLine
+                    + "Coins: " + _coinCountProvider.CointCount,
+                    _camera.Position,
+                    Color.White);
                 if (_gameStateManager.IsLosing)
                 {
                     float secondsElapsed = (float)(gameTime.TotalGameTime.TotalSeconds - _gameStateManager.LostTimeStamp.TotalSeconds);
