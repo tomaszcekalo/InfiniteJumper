@@ -96,7 +96,7 @@ namespace InfiniteJumper
             for (int i = 0; i < _platforms.Count; i++)
             {
                 var platform = _platforms[i];
-                position = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(
+                position = ConvertUnits.ToSimUnits(
                     new Vector2(
                         _settings.PlatformPosition.X.Offset + i * _settings.PlatformPosition.X.Multiplier,
                         _settings.PlatformPosition.Y)
@@ -106,6 +106,8 @@ namespace InfiniteJumper
             }
             _coin.GetComponent<VelcroPhysicsComponent>().Body.Position = new Vector2(-10, -10);
             _lastPlatformProvider.Position = position;
+            _coinCountProvider.CointCount = 0;
+            _platformCountProvider.PlatformCount = 0;
         }
 
         protected override void LoadContent()
@@ -409,8 +411,9 @@ namespace InfiniteJumper
                 _spriteBatch.DrawString(
                     _font,
                     "Platforms: " + _platformCountProvider.PlatformCount + Environment.NewLine
-                    + "Coins: " + _coinCountProvider.CointCount,
-                    _camera.Position,
+                    + "Coins: " + _coinCountProvider.CointCount + Environment.NewLine
+                    + "Timer: " + gameTime.TotalGameTime.ToString(),
+                    _camera.Position + new Vector2(10, 10),
                     Color.White);
                 if (_gameStateManager.IsLosing)
                 {
