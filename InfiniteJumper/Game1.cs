@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Undine.Core;
 using Undine.DefaultEcs;
 using Undine.MonoGame;
@@ -51,6 +52,7 @@ namespace InfiniteJumper
         private LastPlatformProvider _lastPlatformProvider;
         private PlatformCountProvider _platformCountProvider;
         private CoinCountProvider _coinCountProvider;
+        private ScoreKeeper _scoreKeeper;
 
         public Game1()
         {
@@ -107,6 +109,11 @@ namespace InfiniteJumper
             _coin.GetComponent<VelcroPhysicsComponent>().Body.Position = new Vector2(-10, -10);
             _lastPlatformProvider.Position = position;
             _coinCountProvider.CointCount = 0;
+            _scoreKeeper.HighScore.Add(new ScoreEntry()
+            {
+                Score = _platformCountProvider.PlatformCount
+            });
+            _scoreKeeper.HighScore = _scoreKeeper.HighScore.OrderBy(x => x.Score).ToList();
             _platformCountProvider.PlatformCount = 0;
         }
 
@@ -122,6 +129,7 @@ namespace InfiniteJumper
             //_ecsContainer = new LeopotamEcsContainer();
 
             _gameStateManager = new GameStateManager();
+            _scoreKeeper = new ScoreKeeper();
             _spriteAnimationSystem =
             _ecsContainer.GetSystem(new SpriteAnimationSystem(_spriteBatch, _drawGameTimeProvider));
             _dieSound = Content.Load<SoundEffect>("die");
@@ -437,10 +445,15 @@ namespace InfiniteJumper
             else
             {
                 _spriteBatch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.LinearWrap);
+                var text = "Press SPACE";
+                foreach (var score in _scoreKeeper.HighScore)
+                {
+                    text += Environment.NewLine + score.Score.ToString();
+                }
                 var textSize = _font.MeasureString("Press SPACE");
                 _spriteBatch.DrawString(
                     _font,
-                    "Press SPACE",
+                    text,
                     new Vector2(
                         _graphics.PreferredBackBufferWidth / 2 - textSize.X / 2,
                         _graphics.PreferredBackBufferHeight / 2),
