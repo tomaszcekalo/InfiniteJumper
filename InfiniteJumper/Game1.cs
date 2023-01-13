@@ -28,6 +28,10 @@ namespace InfiniteJumper
         private Song _startMusic;
         private Texture2D _chmury;
         private Texture2D _moneta;
+        private Texture2D _polar_bear;
+        private Texture2D _snowflake;
+        private Texture2D _snowman_32x32;
+        private Texture2D _player_x32_21x31;
         private Texture2D _gory;
         private Texture2D _niebo;
         private Texture2D _platform;
@@ -182,6 +186,10 @@ namespace InfiniteJumper
             _startMusic = Content.Load<Song>("startMusic");
             _chmury = Content.Load<Texture2D>("chmury");
             _moneta = Content.Load<Texture2D>("moneta");
+            _polar_bear = Content.Load<Texture2D>("polar_bear");
+            _snowflake = Content.Load<Texture2D>("snowflake");
+            _snowman_32x32 = Content.Load<Texture2D>("snowman_32x32");
+            _player_x32_21x31 = Content.Load<Texture2D>("player_x32_21x31");
             _gory = Content.Load<Texture2D>("gory");
             _niebo = Content.Load<Texture2D>("niebo");
             _platform = Content.Load<Texture2D>("platform");
@@ -457,7 +465,7 @@ namespace InfiniteJumper
                     new Vector2(
                         _graphics.PreferredBackBufferWidth / 2 - textSize.X / 2,
                         _graphics.PreferredBackBufferHeight / 2),
-                    Color.White);
+                        Color.White);
                 _spriteBatch.End();
             }
             base.Draw(gameTime);
