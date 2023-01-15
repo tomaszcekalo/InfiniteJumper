@@ -43,6 +43,7 @@ namespace InfiniteJumper
         private IUnifiedEntity _coin;
         private EcsContainer _ecsContainer;
         private ISystem _spriteAnimationSystem;
+        private Texture2D _textStroke;
         private IUnifiedEntity _player;
         private Camera2D _camera;
         private IGameStateManager _gameStateManager;
@@ -178,7 +179,6 @@ namespace InfiniteJumper
                 GameTimeProvider = _updateGameTimeProvider
             });
             _coinCountProvider = new CoinCountProvider();
-            _ecsContainer.AddSystem(new CoinSystem(_lastPlatformProvider, _coinCountProvider));
 
             //_music = Song.FromUri("music.mp3", new Uri("Content/music.mp3", UriKind.Relative));
             //_startMusic = Song.FromUri("startMusic.mp3", new Uri("Content/startMusic.mp3", UriKind.Relative));
@@ -197,7 +197,23 @@ namespace InfiniteJumper
             _font = Content.Load<SpriteFont>("ClickToStartFont");
             _coinSound = Content.Load<SoundEffect>("coin");
 
+            _ecsContainer.AddSystem(new CoinSystem(_lastPlatformProvider, _coinCountProvider, _coinSound));
+
+            StrokeEffect.strokeEffectCache = Content.Load<Effect>("StrokeEffect");
+            Color textColor = Color.White;
+            Vector2 scale = Vector2.One;
+            int strokeSize = 3;
+            Color strokeColor = Color.Black;
+            StrokeType strokeType = StrokeType.OutlineAndTexture;
+            _textStroke = StrokeEffect.CreateStrokeSpriteFont(_font, "Press SPACE", textColor, scale, strokeSize, strokeColor, GraphicsDevice, strokeType);
+
             _player = _ecsContainer.CreateNewEntity();
+            _ecsContainer.AddSystem(
+                new EnemySystem(
+                    _gameStateManager,
+                    _updateGameTimeProvider,
+                    _settings.Player.DieSound,
+                    _dieSound, _player));
             _camera = new Camera2D(this)
             {
                 Focus = _player
@@ -248,123 +264,34 @@ namespace InfiniteJumper
             });
             _player.AddComponent(new RotationAnimationComponent() { Duration = 1 });
             _playerPhysics.Body.Friction = 0;
-            var coinAnimation = new SpriteAnimationComponent()
-            {
-                CurrentFrameNumber = 0,
-                FPS = 6,
-                Frames = new List<SpriteComponent>()
-                {
-                    new SpriteComponent(_moneta,new Rectangle(0,0,20,20)),//TODO: this is magic value
-                    new SpriteComponent(_moneta,new Rectangle(20,0,20,20)),//TODO: this is magic value
-                    new SpriteComponent(_moneta,new Rectangle(40,0,20,20)),//TODO: this is magic value
-                    new SpriteComponent(_moneta,new Rectangle(60,0,20,20)),//TODO: this is magic value
-                    new SpriteComponent(_moneta,new Rectangle(80,0,20,20)),//TODO: this is magic value
-                    new SpriteComponent(_moneta,new Rectangle(100,0,20,20)),//TODO: this is magic value
-                }
-            };
-            _coin = _ecsContainer.CreateNewEntity();
-            _coin.AddComponent(new CoinComponent());
-            _coin.AddComponent(coinAnimation);
-            _coin.AddComponent(new ColorComponent() { Color = Color.White });
-            var coinPosition = new Vector2(64, 64);
-            _coin.AddComponent(new TransformComponent()
-            {
-                Position = ConvertUnits.ToSimUnits(coinPosition),//TODO: this is magic value
-                Rotation = 0,
-                Scale = Vector2.One,
-                Origin = new Vector2(10, 10)
-            });
-            _coin.AddComponent(new VelcroPhysicsComponent()
-            {
-                Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
-                    physicsWorld,
-                    ConvertUnits.ToSimUnits(20),
-                    ConvertUnits.ToSimUnits(20),
-                    0.1f,
-                    ConvertUnits.ToSimUnits(Vector2.Zero),
-                    0,
-                    VelcroPhysics.Dynamics.BodyType.Static)
-            });
 
+            var entityFactory = new EntityFactory(
+                _ecsContainer,
+                physicsWorld,
+                _settings,
+                _platform,
+                _moneta,
+                _polar_bear);
+            _coin = entityFactory.CreateCoin();
             ////collisionSystem.Collidables.Add(_coin);
             was.Coin = _coin;
 
             //starting platform
-            var white = new ColorComponent() { Color = Color.White };
-            var initialPlatformAnimation = new SpriteAnimationComponent()
-            {
-                CurrentFrameNumber = 0,
-                FPS = 1,
-                Frames = new List<SpriteComponent>()
-                {
-                    new SpriteComponent(_platform, _settings.InitialPlatform.Box)
-                }
-            };
-            var initialPlatform = _ecsContainer.CreateNewEntity();
-            initialPlatform.AddComponent(initialPlatformAnimation);
-            initialPlatform.AddComponent(white);
-            initialPlatform.AddComponent(new TransformComponent()
-            {
-                Position = _settings.InitialPlatform.Position.ToVector2(),
-                Rotation = 0,
-                Scale = Vector2.One,
-                Origin = new Vector2(512, 16)
-            });
-            initialPlatform.AddComponent(new VelcroPhysicsComponent()
-            {
-                Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
-                    physicsWorld,
-                    ConvertUnits.ToSimUnits(_settings.InitialPlatform.Box.Width),
-                    ConvertUnits.ToSimUnits(_settings.InitialPlatform.Box.Height),
-                    0.1f,
-                    ConvertUnits.ToSimUnits(_settings.InitialPlatform.Position.ToVector2()),
-                    0,
-                    VelcroPhysics.Dynamics.BodyType.Static)
-            });
+            var initialPlatform = entityFactory.CreateInitialPlatform();
+
+            var bear = entityFactory.CreateBear();
 
             //collisionSystem.Collidables.Add(initialPlatform);
             Vector2 position = new Vector2();
             for (int i = 0; i <= 8; i++)
             {
-                var platform = _ecsContainer.CreateNewEntity();
-                _platforms.Add(platform);
-                var platformAnimation = new SpriteAnimationComponent()
-                {
-                    CurrentFrameNumber = 0,
-                    FPS = 1,
-                    Frames = new List<SpriteComponent>()
-                    {
-                        new SpriteComponent(_platform, new Rectangle(0,0,32*6,32))//TODO: this is magic value
-                    }
-                };
-                platform.AddComponent(platformAnimation);
-                platform.AddComponent(white);
                 position = new Vector2(
                        _settings.PlatformPosition.X.Offset + i * _settings.PlatformPosition.X.Multiplier,
                        _settings.PlatformPosition.Y);
-                platform.AddComponent(new TransformComponent()
-                {
-                    Position = position,
-                    Rotation = 0,
-                    Scale = Vector2.One,
-                    Origin = new Vector2(32 * 6 / 2, 16)
-                });
-                platform.AddComponent(new VelcroPhysicsComponent()
-                {
-                    Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
-                    physicsWorld,
-                    ConvertUnits.ToSimUnits(32 * 6),
-                    ConvertUnits.ToSimUnits(32),
-                    0.1f,
-                    ConvertUnits.ToSimUnits(position),
-                    0,
-                    VelcroPhysics.Dynamics.BodyType.Static)
-                });
-                platform.AddComponent(new WallComponent());
-                //collisionSystem.Collidables.Add(platform);
+                var platform = entityFactory.CreatePlatform(position);
+                _platforms.Add(platform);
             }
             _lastPlatformProvider.Position = ConvertUnits.ToSimUnits(position);
-            //add wall adding system
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(_startMusic);
@@ -424,6 +351,7 @@ namespace InfiniteJumper
                 _spriteBatch.End();
                 _spriteBatch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.LinearWrap, transformMatrix: _camera.GetViewMatrix(1));
                 _spriteAnimationSystem.ProcessAll();
+
                 _spriteBatch.DrawString(
                     _font,
                     "Platforms: " + _platformCountProvider.PlatformCount + Environment.NewLine
@@ -453,19 +381,26 @@ namespace InfiniteJumper
             else
             {
                 _spriteBatch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.LinearWrap);
-                var text = "Press SPACE";
-                foreach (var score in _scoreKeeper.HighScore)
-                {
-                    text += Environment.NewLine + score.Score.ToString();
-                }
+                //var text = "Press SPACE";
+                //foreach (var score in _scoreKeeper.HighScore)
+                //{
+                //    text += Environment.NewLine + score.Score.ToString();
+                //}
                 var textSize = _font.MeasureString("Press SPACE");
-                _spriteBatch.DrawString(
-                    _font,
-                    text,
+                //_spriteBatch.DrawString(
+                //    _font,
+                //    text,
+                //    new Vector2(
+                //        _graphics.PreferredBackBufferWidth / 2 - textSize.X / 2,
+                //        _graphics.PreferredBackBufferHeight / 2),
+                //        Color.White);
+
+                _spriteBatch.Draw(_textStroke,
                     new Vector2(
                         _graphics.PreferredBackBufferWidth / 2 - textSize.X / 2,
                         _graphics.PreferredBackBufferHeight / 2),
                         Color.White);
+
                 _spriteBatch.End();
             }
             base.Draw(gameTime);

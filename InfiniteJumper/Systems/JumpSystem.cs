@@ -55,8 +55,8 @@ namespace InfiniteJumper.Systems
             else if (GameStateManager.IsPlaying
                 && kbCurrent.IsKeyDown(Keys.Space)
                 && _kbState.IsKeyUp(Keys.Space)
-                //&& a.ColidesWithSolid
                 && b.Body.ContactList != null
+                && !GameStateManager.IsLosing
                 )
             {
                 b.Body.LinearVelocity = new Microsoft.Xna.Framework.Vector2(b.Body.LinearVelocity.X, VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(a.JumpSpeed));
@@ -69,7 +69,7 @@ namespace InfiniteJumper.Systems
                 && kbCurrent.IsKeyDown(Keys.Space)
                 && _kbState.IsKeyUp(Keys.Space)
                 && !a.HasDoubleJumped
-                //&& b.Body.LinearVelocity.Y > 0
+                && !GameStateManager.IsLosing
                 )
             {
                 //cayote time

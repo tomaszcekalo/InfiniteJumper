@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace InfiniteJumper
 {
-    internal class Settings
+    public class Settings
     {
         //<canvas style="width: 1746px; height: 981.634px;" width="1334" height="750"></canvas>
         public WidthHeight PreferredBackBuffer { get; set; }
@@ -34,7 +34,7 @@ namespace InfiniteJumper
         public SoundSettings DieSound { get; set; }
     }
 
-    internal class WidthHeight
+    public class WidthHeight
     {
         public int Height { get; set; }
         public int Width { get; set; }

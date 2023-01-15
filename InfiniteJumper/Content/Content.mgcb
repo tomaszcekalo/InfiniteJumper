@@ -170,3 +170,9 @@
 /processorParam:Quality=Best
 /build:startMusic.mp3
 
+#begin StrokeEffect.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:StrokeEffect.fx
+

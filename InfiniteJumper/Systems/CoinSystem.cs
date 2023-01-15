@@ -1,4 +1,5 @@
 ﻿using InfiniteJumper.Components;
+using Microsoft.Xna.Framework.Audio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,15 +12,20 @@ namespace InfiniteJumper.Systems
 {
     internal class CoinSystem : UnifiedSystem<CoinComponent, VelcroPhysicsComponent>
     {
-        public CoinSystem(LastPlatformProvider lastPlatformProvider, CoinCountProvider coinCountProvider)
+        public CoinSystem(
+            LastPlatformProvider lastPlatformProvider,
+            CoinCountProvider coinCountProvider,
+            SoundEffect coinSound)
         {
             LastPlatformProvider = lastPlatformProvider;
             CoinCountProvider = coinCountProvider;
+            CoinSound = coinSound;
         }
 
         public Camera2D Camera2D { get; }
         public LastPlatformProvider LastPlatformProvider { get; }
         public CoinCountProvider CoinCountProvider { get; }
+        public SoundEffect CoinSound { get; }
 
         public override void ProcessSingleEntity(int entityId, ref CoinComponent a, ref VelcroPhysicsComponent b)
         {
@@ -27,6 +33,7 @@ namespace InfiniteJumper.Systems
             {
                 CoinCountProvider.CointCount++;
                 b.Body.Position = LastPlatformProvider.Position - new Microsoft.Xna.Framework.Vector2(2, 2);
+                CoinSound.Play();
             }
         }
     }
