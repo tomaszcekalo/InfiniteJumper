@@ -48,7 +48,6 @@ namespace InfiniteJumper
         private Camera2D _camera;
         private IGameStateManager _gameStateManager;
 
-        //private CustomPhysicsSystem _physics;
         private List<IUnifiedEntity> _platforms = new List<IUnifiedEntity>();
 
         private Settings _settings;
@@ -68,7 +67,6 @@ namespace InfiniteJumper
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             string path = "Settings.json";
             if (File.Exists(path))
             {
@@ -148,16 +146,11 @@ namespace InfiniteJumper
                     _settings.Player.DieSound,
                     _settings.Player.JumpSound,
                     _settings.LostTreshold));
-            //_physics = new CustomPhysicsSystem(
-            //    _settings.Gravity.ToVector2(),
-            //    _updateGameTimeProvider,
-            //    _gameStateManager);
-            //_ecsContainer.AddSystem(_physics);
+
             var physicsWorld = new VelcroPhysics.Dynamics.World(
                 ConvertUnits.ToSimUnits
                 (
                     _settings.Gravity.ToVector2()
-                //new Vector2(00, 222)
                 ));
             var physicsEntity = _ecsContainer.CreateNewEntity();
             physicsEntity.AddComponent(new VelcroWorldComponent()
@@ -168,12 +161,7 @@ namespace InfiniteJumper
             _ecsContainer.AddSystem(_velcroPhysicsSystem);
             _ecsContainer.AddSystem(new VelcroPhysicsTransformSystem());
             _lastPlatformProvider = new LastPlatformProvider();
-            //var collisionSystem = new CollisionSystem()
-            //{
-            //    GameTimeProvider = _updateGameTimeProvider,
-            //    LastPlatformProvider = lpp
-            //};
-            //_ecsContainer.AddSystem(collisionSystem);
+
             _ecsContainer.AddSystem(new RotationAnimationSystem()
             {
                 GameTimeProvider = _updateGameTimeProvider
@@ -273,15 +261,12 @@ namespace InfiniteJumper
                 _moneta,
                 _polar_bear);
             _coin = entityFactory.CreateCoin();
-            ////collisionSystem.Collidables.Add(_coin);
             was.Coin = _coin;
 
-            //starting platform
             var initialPlatform = entityFactory.CreateInitialPlatform();
 
             var bear = entityFactory.CreateBear();
 
-            //collisionSystem.Collidables.Add(initialPlatform);
             Vector2 position = new Vector2();
             for (int i = 0; i <= 8; i++)
             {
@@ -295,8 +280,6 @@ namespace InfiniteJumper
 
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(_startMusic);
-
-            // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)
@@ -306,7 +289,6 @@ namespace InfiniteJumper
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
             if (!_gameStateManager.IsPlaying && Keyboard.GetState().IsKeyDown(Keys.Space))
             {
                 _gameStateManager.IsPlaying = true;
