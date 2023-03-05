@@ -41,6 +41,7 @@ namespace InfiniteJumper
         private SoundEffect _dieSound;
         private SoundEffect _jumpSound;
         private IUnifiedEntity _coin;
+        private IUnifiedEntity _bear;
         private EcsContainer _ecsContainer;
         private ISystem _spriteAnimationSystem;
         private Texture2D _textStroke;
@@ -110,6 +111,7 @@ namespace InfiniteJumper
                 physicsComponent.Body.Position = position;
             }
             _coin.GetComponent<VelcroPhysicsComponent>().Body.Position = new Vector2(-10, -10);
+            _bear.GetComponent<VelcroPhysicsComponent>().Body.Position = ConvertUnits.ToSimUnits(new Vector2(1320, 320));
             _lastPlatformProvider.Position = position;
             _coinCountProvider.CointCount = 0;
             _scoreKeeper.HighScore.Add(new ScoreEntry()
@@ -185,7 +187,8 @@ namespace InfiniteJumper
             _font = Content.Load<SpriteFont>("ClickToStartFont");
             _coinSound = Content.Load<SoundEffect>("coin");
 
-            _ecsContainer.AddSystem(new CoinSystem(_lastPlatformProvider, _coinCountProvider, _coinSound));
+            _player = _ecsContainer.CreateNewEntity();
+            _ecsContainer.AddSystem(new CoinSystem(_lastPlatformProvider, _coinCountProvider, _coinSound, _player));
 
             StrokeEffect.strokeEffectCache = Content.Load<Effect>("StrokeEffect");
             Color textColor = Color.White;
@@ -195,7 +198,6 @@ namespace InfiniteJumper
             StrokeType strokeType = StrokeType.OutlineAndTexture;
             _textStroke = StrokeEffect.CreateStrokeSpriteFont(_font, "Press SPACE", textColor, scale, strokeSize, strokeColor, GraphicsDevice, strokeType);
 
-            _player = _ecsContainer.CreateNewEntity();
             _ecsContainer.AddSystem(
                 new EnemySystem(
                     _gameStateManager,
@@ -265,7 +267,8 @@ namespace InfiniteJumper
 
             var initialPlatform = entityFactory.CreateInitialPlatform();
 
-            var bear = entityFactory.CreateBear();
+            _bear = entityFactory.CreateBear();
+            was.Bear = _bear;
 
             Vector2 position = new Vector2();
             for (int i = 0; i <= 8; i++)

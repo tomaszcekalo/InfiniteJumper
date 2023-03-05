@@ -29,6 +29,7 @@ namespace InfiniteJumper.Systems
         public PlatformCountProvider PlatformCountProvider { get; }
         public Settings Settings { get; }
         public IUnifiedEntity Coin { get; set; }
+        public IUnifiedEntity Bear { get; set; }
 
         public override void ProcessSingleEntity(
             int entityId,
@@ -48,8 +49,13 @@ namespace InfiniteJumper.Systems
                 if (coinTransform.Position.X < Camera2D.Position.X)
                 {
                     ref var coinBody = ref Coin.GetComponent<VelcroPhysicsComponent>();
-                    coinBody.Body.Position = b.Body.Position - new Microsoft.Xna.Framework.Vector2(2, 2); ;
-                    //coinTransform.Position = new Microsoft.Xna.Framework.Vector2(a.Position.X, 452);//TODO
+                    coinBody.Body.Position = b.Body.Position - new Microsoft.Xna.Framework.Vector2(2, 2);
+                }
+                ref var bearTransform = ref Coin.GetComponent<TransformComponent>();
+                if (bearTransform.Position.X < Camera2D.Position.X)
+                {
+                    ref var bearBody = ref Bear.GetComponent<VelcroPhysicsComponent>();
+                    bearBody.Body.Position = b.Body.Position - new Microsoft.Xna.Framework.Vector2(2, 2);
                 }
             }
         }
