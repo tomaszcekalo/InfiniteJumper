@@ -111,7 +111,11 @@ namespace InfiniteJumper
                 physicsComponent.Body.Position = position;
             }
             _coin.GetComponent<VelcroPhysicsComponent>().Body.Position = new Vector2(-10, -10);
-            _bear.GetComponent<VelcroPhysicsComponent>().Body.Position = ConvertUnits.ToSimUnits(new Vector2(1320, 320));
+            var bearBody = _bear.GetComponent<VelcroPhysicsComponent>().Body;
+            bearBody.AngularVelocity = 0;
+            bearBody.LinearVelocity = new Vector2(0, 1);
+            bearBody.Rotation = 0;
+            bearBody.Position = ConvertUnits.ToSimUnits(new Vector2(1320, 220));
             _lastPlatformProvider.Position = position;
             _coinCountProvider.CointCount = 0;
             _scoreKeeper.HighScore.Add(new ScoreEntry()

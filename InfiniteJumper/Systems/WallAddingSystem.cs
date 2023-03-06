@@ -1,4 +1,5 @@
 ﻿using InfiniteJumper.Components;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using Undine.Core;
 using Undine.MonoGame;
 using Undine.VelcroPhysics.MonoGame;
+using VelcroPhysics.Utilities;
 
 namespace InfiniteJumper.Systems
 {
@@ -37,10 +39,10 @@ namespace InfiniteJumper.Systems
             ref VelcroPhysicsComponent b,
             ref WallComponent c)
         {
-            if ((b.Body.Position.X + VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(a.Origin.X)) < VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(Camera2D.Position.X))
+            if ((b.Body.Position.X + ConvertUnits.ToSimUnits(a.Origin.X)) < ConvertUnits.ToSimUnits(Camera2D.Position.X))
             {
                 //var Position = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(new Microsoft.Xna.Framework.Vector2(1500, 0));//TODO Add Magic Values To Settings
-                var modifier = VelcroPhysics.Utilities.ConvertUnits.ToSimUnits(new Microsoft.Xna.Framework.Vector2(Settings.PlatformPosition.X.Multiplier, 0));
+                var modifier = ConvertUnits.ToSimUnits(new Vector2(Settings.PlatformPosition.X.Multiplier, 0));
                 b.Body.Position = LastPlatformProvider.Position + modifier;
                 LastPlatformProvider.Position = b.Body.Position;
                 PlatformCountProvider.PlatformCount++;
@@ -49,13 +51,13 @@ namespace InfiniteJumper.Systems
                 if (coinTransform.Position.X < Camera2D.Position.X)
                 {
                     ref var coinBody = ref Coin.GetComponent<VelcroPhysicsComponent>();
-                    coinBody.Body.Position = b.Body.Position - new Microsoft.Xna.Framework.Vector2(2, 2);
+                    coinBody.Body.Position = b.Body.Position - new Vector2(2, 2);
                 }
-                ref var bearTransform = ref Coin.GetComponent<TransformComponent>();
+                ref var bearTransform = ref Bear.GetComponent<TransformComponent>();
                 if (bearTransform.Position.X < Camera2D.Position.X)
                 {
                     ref var bearBody = ref Bear.GetComponent<VelcroPhysicsComponent>();
-                    bearBody.Body.Position = b.Body.Position - new Microsoft.Xna.Framework.Vector2(2, 2);
+                    bearBody.Body.Position = b.Body.Position - ConvertUnits.ToSimUnits(bearTransform.Origin * bearTransform.Scale * 2 - a.Origin);
                 }
             }
         }

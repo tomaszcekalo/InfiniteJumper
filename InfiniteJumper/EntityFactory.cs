@@ -84,12 +84,15 @@ namespace InfiniteJumper
             bear.AddComponent(new EnemyComponent());
             bear.AddComponent(_bearAnimation);
             bear.AddComponent(new ColorComponent() { Color = Color.White });
-            var bearPosition = new Vector2(1320, 320);
+            var bearPosition = new Vector2(1320, -320);
+            var scale = Vector2.One * 0.2f;
+            var size = new Vector2(640, 320);
+            var realDimensions = size * scale;
             bear.AddComponent(new TransformComponent()
             {
                 Position = bearPosition,
                 Rotation = 0,
-                Scale = new Vector2(0.1f, 0.1f),
+                Scale = scale,
                 Origin = new Vector2(320, 160)
             });
             bear.AddComponent(new EnemyComponent() { });
@@ -97,8 +100,8 @@ namespace InfiniteJumper
             {
                 Body = VelcroPhysics.Factories.BodyFactory.CreateRectangle(
                     physicsWorld,
-                    ConvertUnits.ToSimUnits(64),
-                    ConvertUnits.ToSimUnits(32),
+                    ConvertUnits.ToSimUnits(realDimensions.X),
+                    ConvertUnits.ToSimUnits(realDimensions.Y),
                     0.1f,
                     ConvertUnits.ToSimUnits(bearPosition),
                     0,
