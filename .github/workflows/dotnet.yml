@@ -28,6 +28,11 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Publish
       run:  dotnet publish -c Release -r win-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false --self-contained /p:DesktopBuildPackageLocation="./my-artifact.zip"
+      - name: Create Zip File
+        uses: papeloto/action-zip@v1
+        with:
+          files: /home/runner/work/InfiniteJumper/InfiniteJumper/InfiniteJumper/bin/Release/net7.0/win-x64/publish/
+          dest: ./my-artifact.zip
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
