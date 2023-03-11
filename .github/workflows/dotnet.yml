@@ -41,13 +41,17 @@ jobs:
 #      with:
 #        title: MyReleaseMessage
 #        tag_name: ${{ github.run_number }}
+    - name: "Set current date as env variable"
+      run: |
+        echo "builddate=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+        id: version  # this is used on variable path
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.event.repository.updated_at }} ${{ github.run_number }}
+        tag_name: ${{ steps.version.outputs.builddate }} ${{ github.run_number }}
         release_name: Release ${{ github.event.repository.updated_at }} ${{ github.run_number }}
         draft: false
         prerelease: false
