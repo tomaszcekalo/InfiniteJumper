@@ -28,7 +28,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Publish
       run:  dotnet publish -c Release -r win-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false --self-contained |
-          zip --junk-paths my-artifact README.md
+          Compress-Archive -Path /home/runner/work/InfiniteJumper/InfiniteJumper/InfiniteJumper/bin/Release/net7.0/win-x64/publish/ -DestinationPath my-artifact.zip --junk-paths my-artifact README.md
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
