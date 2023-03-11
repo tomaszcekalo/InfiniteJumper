@@ -31,7 +31,7 @@ jobs:
     - name: Create Zip File
       uses: papeloto/action-zip@v1
       with:
-        files: /home/runner/work/InfiniteJumper/InfiniteJumper/InfiniteJumper/bin/Release/net7.0/win-x64/publish/
+        files: ./
         dest: ./my-artifact.zip
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
