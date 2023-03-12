@@ -31,21 +31,13 @@ jobs:
     - name: Create Zip File
       uses: papeloto/action-zip@v1
       with:
-        files: ./
+        files: ./InfiniteJumper\bin\Release\net7.0\win-x64\publish
         dest: ./my-artifact.zip
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: release
-        path: /home/runner/work/InfiniteJumper/InfiniteJumper/InfiniteJumper/bin/Release/net7.0/win-x64/publish/
-#    - name: Create a Release
-#      uses: elgohr/Github-Release-Action@v4
-#      uses: actions/create-release@v1
-#      env:
-#        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-#      with:
-#        title: MyReleaseMessage
-#        tag_name: ${{ github.run_number }}
+        path: ./InfiniteJumper\bin\Release\net7.0\win-x64\publish
     - name: "Set current date as env variable"
       run: |
         echo "builddate=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
