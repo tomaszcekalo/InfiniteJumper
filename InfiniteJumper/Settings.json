@@ -1,48 +1,48 @@
 {
-  "PreferredBackBuffer": {
-    "Height": 750,
-    "Width": 1334
-  },
-  "MeterInPixels": 16,
-  "PlatformPosition": {
-    "X": {
-      "Multiplier": 251,
-      "Offset": 800
+    "PreferredBackBuffer": {
+        "Height": 750,
+        "Width": 1334
     },
-    "Y": 512
-  },
-  "LostTreshold": 750,
-  "Gravity": {
-    "X": 0,
-    "Y": 333
-  },
-  "Player": {
-    "Speed": {
-      "X": 155,
-      "Y": 0
+    "MeterInPixels": 16,
+    "PlatformPosition": {
+        "X": {
+            "Multiplier": 251,
+            "Offset": 800
+        },
+        "Y": 512
     },
-    "Jumpspeed": -222,
-    "JumpSound": {
-      "Volume": 0.1,
-      "Pitch": 0,
-      "Pan": 0
+    "LostTreshold": 750,
+    "Gravity": {
+        "X": 0,
+        "Y": 333
     },
-    "DieSound": {
-      "Volume": 1,
-      "Pitch": 0,
-      "Pan": 0
+    "Player": {
+        "Speed": {
+            "X": 155,
+            "Y": 0
+        },
+        "Jumpspeed": -256,
+        "JumpSound": {
+            "Volume": 0.1,
+            "Pitch": 0,
+            "Pan": 0
+        },
+        "DieSound": {
+            "Volume": 1,
+            "Pitch": 0,
+            "Pan": 0
+        }
+    },
+    "InitialPlatform": {
+        "Position": {
+            "X": 0,
+            "Y": 512
+        },
+        "Box": {
+            "X": 0,
+            "Y": 0,
+            "Width": 1024,
+            "Height": 32
+        }
     }
-  },
-  "InitialPlatform": {
-    "Position": {
-      "X": 0,
-      "Y": 512
-    },
-    "Box": {
-      "X": 0,
-      "Y": 0,
-      "Width": 1024,
-      "Height": 32
-    }
-  }
 }

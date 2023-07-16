@@ -1,6 +1,7 @@
 ﻿using InfiniteJumper.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -39,6 +40,10 @@ namespace InfiniteJumper.Systems
                 effects: SpriteEffects.None,
                 layerDepth: a.LayerDepth
                 );
+            //var position = b.Position - b.Origin * b.Scale;
+            //var size = new Vector2(a.CurrentFrame.SourceRectangle.Width, a.CurrentFrame.SourceRectangle.Height);
+            //size *= b.Scale;
+            //Primitives2D.DrawRectangle(SpriteBatch, position, size, Color.Red);
             //działa:
             //position: b.Position - b.Origin,
             //origin: Vector2.Zero,//b.Origin,

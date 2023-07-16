@@ -80,6 +80,7 @@ namespace InfiniteJumper
             }
             _graphics.PreferredBackBufferHeight = _settings.PreferredBackBuffer.Height;
             _graphics.PreferredBackBufferWidth = _settings.PreferredBackBuffer.Width;
+
             _graphics.ApplyChanges();
             float meterInPixels = _settings.MeterInPixels;
             ConvertUnits.SetDisplayUnitToSimUnitRatio(meterInPixels);
@@ -139,8 +140,7 @@ namespace InfiniteJumper
 
             _gameStateManager = new GameStateManager();
             _scoreKeeper = new ScoreKeeper();
-            _spriteAnimationSystem =
-            _ecsContainer.GetSystem(new SpriteAnimationSystem(_spriteBatch, _drawGameTimeProvider));
+            _spriteAnimationSystem = _ecsContainer.GetSystem(new SpriteAnimationSystem(_spriteBatch, _drawGameTimeProvider));
             _dieSound = Content.Load<SoundEffect>("die");
             _jumpSound = Content.Load<SoundEffect>("jump");
             _ecsContainer.AddSystem(

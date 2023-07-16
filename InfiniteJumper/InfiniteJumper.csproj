@@ -19,14 +19,15 @@
     <EmbeddedResource Include="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Apos.Gui" Version="1.0.11" />
+    <PackageReference Include="Apos.Gui" Version="2.0.0" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Undine.Core" Version="0.0.0.2" />
-    <PackageReference Include="Undine.DefaultEcs" Version="1.0.1" />
-    <PackageReference Include="Undine.MonoGame" Version="0.0.4" />
-    <PackageReference Include="Undine.VelcroPhysics.MonoGame" Version="0.0.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Undine.Core" Version="0.0.0.5" />
+    <PackageReference Include="Undine.DefaultEcs" Version="1.0.2" />
+    <PackageReference Include="Undine.MonoGame" Version="0.0.5" />
+    <PackageReference Include="Undine.MonoGame.Primitives2D" Version="0.0.3" />
+    <PackageReference Include="Undine.VelcroPhysics.MonoGame" Version="0.0.5" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Content\arial.ttf">
