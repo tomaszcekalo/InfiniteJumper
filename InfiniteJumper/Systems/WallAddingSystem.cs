@@ -57,7 +57,7 @@ namespace InfiniteJumper.Systems
                 if (bearTransform.Position.X < Camera2D.Position.X)
                 {
                     ref var bearBody = ref Bear.GetComponent<VelcroPhysicsComponent>();
-                    bearBody.Body.Position = b.Body.Position - ConvertUnits.ToSimUnits(bearTransform.Origin * bearTransform.Scale * 2 - a.Origin);
+                    bearBody.Body.Position = b.Body.Position - ConvertUnits.ToSimUnits(bearTransform.Origin * bearTransform.Scale * 2 /*- a.Origin*/);
                 }
             }
         }
