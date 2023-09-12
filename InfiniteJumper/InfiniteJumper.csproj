@@ -24,7 +24,7 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Undine.Core" Version="0.0.0.6" />
-    <PackageReference Include="Undine.DefaultEcs" Version="1.0.2" />
+    <PackageReference Include="Undine.DefaultEcs" Version="1.0.3" />
     <PackageReference Include="Undine.MonoGame" Version="0.0.6" />
     <PackageReference Include="Undine.MonoGame.Primitives2D" Version="0.0.3" />
     <PackageReference Include="Undine.VelcroPhysics.MonoGame" Version="0.0.5" />
