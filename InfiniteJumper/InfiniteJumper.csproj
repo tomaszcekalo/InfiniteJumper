@@ -27,7 +27,7 @@
     <PackageReference Include="Undine.DefaultEcs" Version="1.0.3" />
     <PackageReference Include="Undine.MonoGame" Version="0.0.6" />
     <PackageReference Include="Undine.MonoGame.Primitives2D" Version="0.0.4" />
-    <PackageReference Include="Undine.VelcroPhysics.MonoGame" Version="0.0.5" />
+    <PackageReference Include="Undine.VelcroPhysics.MonoGame" Version="0.0.6" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Content\arial.ttf">
